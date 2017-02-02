@@ -24,6 +24,7 @@ def build_graph():
 
     W_e_conv1 = weight_variable([5, 5, 1, 16], "w_e_conv1")
     b_e_conv1 = bias_variable([16], "b_e_conv1")
+    print(conv2d(x_origin_noise, W_e_conv1).get_shape())
     h_e_conv1 = tf.nn.relu(tf.add(conv2d(x_origin_noise, W_e_conv1), b_e_conv1))
 
     W_e_conv2 = weight_variable([5, 5, 16, 32], "w_e_conv2")
@@ -34,13 +35,14 @@ def build_graph():
     print("code layer shape : %s" % h_e_conv2.get_shape())
 
     W_d_conv1 = weight_variable([5, 5, 16, 32], "w_d_conv1")
-    b_d_conv1 = bias_variable([32], "b_d_conv1")
-    output_shape_d_conv1 = tf.pack([tf.shape(x)[0], 14, 14, 16])
+#    output_shape_d_conv1 = tf.pack([tf.shape(x)[0], 14, 14, 16])
+    output_shape_d_conv1 = tf.pack([tf.shape(x)[0], 1, 3, 32])
     h_d_conv1 = tf.nn.relu(deconv2d(h_e_conv2, W_d_conv1, output_shape_d_conv1))
 
     W_d_conv2 = weight_variable([5, 5, 1, 16], "w_d_conv2")
     b_d_conv2 = bias_variable([16], "b_d_conv2")
-    output_shape_d_conv2 = tf.pack([tf.shape(x)[0], 3, 11, 1])
+#    output_shape_d_conv2 = tf.pack([tf.shape(x)[0], 3, 11, 1])
+    output_shape_d_conv2 = tf.pack([tf.shape(x)[0], 2, 6, 16])
     h_d_conv2 = tf.nn.relu(deconv2d(h_d_conv1, W_d_conv2, output_shape_d_conv2))
 
     x_reconstruct = h_d_conv2
