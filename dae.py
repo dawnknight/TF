@@ -9,7 +9,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 import h5py
-
+from random import shuffle as sf
 
 n_hidden1 = 512
 n_hidden2 = 1024
@@ -21,7 +21,7 @@ x_noise = tf.placeholder(tf.float32, shape = [None, 33])
 
 
 W_init1 = tf.random_uniform(shape=[33, n_hidden1])
-W_init2 = tf.random_uniform(shape=[n_hidden1,n_hidden1])
+W_init2 = tf.random_uniform(shape=[n_hidden1,n_hidden2])
 
 # encoder
 W1= tf.Variable(W_init1, name='W1')#shape:33*512
@@ -36,15 +36,15 @@ W_prime2 = tf.transpose(W1)
 b_prime2 = tf.Variable(tf.zeros([33]), name='b2_prime')
 
 
-h_d_1 = tf.nn.relu(tf.matmul(x,W1)+b1)
+h_d_1 = tf.nn.relu(tf.matmul(x_noise,W1)+b1)
 h_d_2 = tf.nn.relu(tf.matmul(h_d_1,W2)+b2)
 b_d_1 = tf.nn.relu(tf.matmul(h_d_2,W_prime1)+b_prime1)
 b_d_2 = tf.nn.relu(tf.matmul(h_d_1,W_prime2)+b_prime2)
 
 output = b_d_2
 
-cost = tf.reduce_mean(tf.pow(output - x_noise, 2))
-optimizer = tf.train.AdamOptimizer(0.01).minimize(cost)
+cost = tf.reduce_mean(tf.pow(output - x, 2))
+optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
 
 sess = tf.InteractiveSession()
 batch_size = 50
@@ -57,13 +57,20 @@ f_telab  = h5py.File('data.h5','r')['test_label'][:].T
 f_train  = h5py.File('data.h5','r')['train_data'][:].T
 f_trlab  = h5py.File('data.h5','r')['train_label'][:].T
 
-for epoch in range(10000):
 
+idx = np.arange(f_train.shape[0])
+sf(idx)
+
+for epoch in range(30000):
+        
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
- 
-    batch_raw = f_trlab[(counter)*batch_size:(counter+1)*batch_size,:].reshape(batch_size,-1)
-    batch_noise =f_train[(counter)*batch_size:(counter+1)*batch_size,:].reshape(batch_size,-1)
+        idx = np.arange(f_train.shape[0])
+        sf(idx)
+        
+        
+    batch_raw = f_trlab[idx[(counter)*batch_size:(counter+1)*batch_size],:].reshape(batch_size,-1)
+    batch_noise =f_train[idx[(counter)*batch_size:(counter+1)*batch_size],:].reshape(batch_size,-1)
     counter += 1
      
         
@@ -77,7 +84,7 @@ for epoch in range(10000):
     optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise})
 
 
-
+print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
 
 
 
