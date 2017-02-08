@@ -60,13 +60,20 @@ for file_idx in xrange(len(file_tail_list)):
     
     
 from random import shuffle as sf
-K = cPickle.load(file('./Concatenate_Data/K_ex4.pkl','rb'))
-M = cPickle.load(file('./Concatenate_Data/M_ex4.pkl','rb'))
+K = cPickle.load(file('./Concatenate_Data/K_ex4.pkl','r'))
+M = cPickle.load(file('./Concatenate_Data/M_ex4.pkl','r'))
 
-KMAX = K.max() 
-KMIN = K.min()
-MMAX = M.max()
-MMIN = M.min()
+MAX = np.max([K.max(),M.max()])
+MIN = np.min([K.min(),M.min()])
+
+#OsK = (K-MIN)/(MAX-MIN)
+#OsM = (M-MIN)/(MAX-MIN)
+#
+#f = h5py.File("odata.h5", "w")
+#f.create_dataset('data' , data = OsK) 
+#f.create_dataset('label', data = OsM) 
+#f.create_dataset('minmax'     , data =[MIN,MAX]) 
+#f.close() 
 
 test_rate = 0.2
 
@@ -84,12 +91,12 @@ trL = sM[:,int(0.2*K.shape[1]):]
 
 
 # normalized to -1 to 1
-NsK = (sK*2-KMIN-KMAX)/(KMAX-KMIN)
-NsM = (sM*2-MMIN-MMAX)/(MMAX-MMIN)
+#NsK = (sK*2-KMIN-KMAX)/(KMAX-KMIN)
+#NsM = (sM*2-MMIN-MMAX)/(MMAX-MMIN)
 
 #normalized to 0 to 1
-#NsK = (sK*2-KMIN)/(KMAX-KMIN)
-#NsM = (sM*2-MMIN)/(MMAX-MMIN)
+NsK = (sK-MIN)/(MAX-MIN)
+NsM = (sM-MIN)/(MAX-MIN)
 
 NteX = NsK[:,:int(0.2*K.shape[1])]
 NtrX = NsK[:,int(0.2*K.shape[1]):]
@@ -104,7 +111,7 @@ f.create_dataset('train_label', data = trL)
 f.create_dataset('test_data'  , data = teX) 
 f.create_dataset('test_label' , data = teL) 
 f.create_dataset('idx'        , data = idx) 
-f.create_dataset('minmax'     , data =[KMIN,KMAX,MMIN,MMAX]) 
+f.create_dataset('minmax'     , data =[MIN,MAX]) 
 f.close() 
 
 
@@ -114,7 +121,7 @@ f.create_dataset('train_label', data = NtrL)
 f.create_dataset('test_data'  , data = NteX) 
 f.create_dataset('test_label' , data = NteL) 
 f.create_dataset('idx'        , data = idx) 
-f.create_dataset('minmax'     , data =[KMIN,KMAX,MMIN,MMAX]) 
+f.create_dataset('minmax'     , data =[MIN,MAX]) 
 f.close() 
 
     

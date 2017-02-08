@@ -11,8 +11,8 @@ import numpy as np
 import h5py
 from random import shuffle as sf
 
-n_hidden1 = 512
-n_hidden2 = 1024
+n_hidden1 = 128
+n_hidden2 = 256
 
 # set a placeholder for future input
 x = tf.placeholder(tf.float32, shape = [None, 33])
@@ -20,38 +20,40 @@ x_noise = tf.placeholder(tf.float32, shape = [None, 33])
 
 
 
-W_init1 = tf.random_uniform(shape=[33, n_hidden1])
-W_init2 = tf.random_uniform(shape=[n_hidden1,n_hidden2])
-Wp_init1 = tf.random_uniform(shape=[n_hidden2, n_hidden1])
-Wp_init2 = tf.random_uniform(shape=[n_hidden1,33])
+W_init1  = tf.truncated_normal(shape=[33, n_hidden1],stddev=0.01)
+W_init2  = tf.truncated_normal(shape=[n_hidden1,n_hidden2],stddev=0.01)
+Wp_init1 = tf.truncated_normal(shape=[n_hidden2, n_hidden1],stddev=0.01)
+Wp_init2 = tf.truncated_normal(shape=[n_hidden1,33],stddev=0.01)
 
 # encoder
 W1= tf.Variable(W_init1, name='W1')#shape:33*512
-b1 = tf.Variable(tf.zeros([n_hidden1]), name='b1')#bias
+b1 = tf.Variable(tf.constant(0.1,shape = [n_hidden1]), name='b1')#bias
 W2= tf.Variable(W_init2, name='W2')#shape:33*512
-b2 = tf.Variable(tf.zeros([n_hidden2]), name='b2')#bias
+b2 = tf.Variable(tf.constant(0.1,shape = [n_hidden2]), name='b2')#bias
 
 #decoder
 #W_prime1 = tf.transpose(W2)  
 W_prime1 = tf.Variable(Wp_init1, name='Wp1')
-b_prime1 = tf.Variable(tf.zeros([n_hidden1]), name='b1_prime')
+b_prime1 = tf.Variable(tf.constant(0.1,shape = [n_hidden1]), name='b1_prime')
 #W_prime2 = tf.transpose(W1)  
 W_prime2 = tf.Variable(Wp_init2, name='Wp2')
-b_prime2 = tf.Variable(tf.zeros([33]), name='b2_prime')
+b_prime2 = tf.Variable(tf.constant(0.1,shape = [33]), name='b2_prime')
 
 
 h_d_1 = tf.nn.relu(tf.matmul(x_noise,W1)+b1)
 h_d_2 = tf.nn.relu(tf.matmul(h_d_1,W2)+b2)
 b_d_1 = tf.nn.relu(tf.matmul(h_d_2,W_prime1)+b_prime1)
-b_d_2 = tf.nn.relu(tf.matmul(h_d_1,W_prime2)+b_prime2)
+b_d_2 = tf.sigmoid(tf.matmul(h_d_1,W_prime2)+b_prime2)
 
 output = b_d_2
 
 cost = tf.reduce_mean(tf.pow(output - x, 2))
-optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+optimizer = tf.train.AdamOptimizer(0.00001).minimize(cost)
+#optimizer = tf.train.GradientDescentOptimizer(0.001).minimize(cost)
+
 
 sess = tf.InteractiveSession()
-batch_size = 50
+batch_size = 32
 counter = 0
 init_op = tf.global_variables_initializer()
 sess.run(init_op)
@@ -89,6 +91,7 @@ for epoch in range(30000):
 
 
 print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
+
 
 
 
