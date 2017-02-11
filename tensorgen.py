@@ -9,7 +9,9 @@ import numpy as np
 from random import shuffle as sf
 
 
-path = 'C:/Users/Dawnknight/Documents/GitHub/Kproject/data/Motion and Kinect/'
+#path = 'C:/Users/Dawnknight/Documents/GitHub/Kproject/data/Motion and Kinect/'
+path  = 'D:\Project\PyKinect2-master\Kproject\data\Motion and Kinect/'
+
 
 Kfolder = 'Unified_KData/'
 Mfolder = 'Unified_MData/'
@@ -113,16 +115,20 @@ teL   = NM[:,:,:int(0.2*sum(LEN))]
 trX   = NK[:,:,int(0.2*sum(LEN)):]
 trL   = NM[:,:,int(0.2*sum(LEN)):] 
 
-f = h5py.File("Ndata_batch.h5", "w")
-f.create_dataset('train_data' , data = trX) 
-f.create_dataset('train_label', data = trL) 
-f.create_dataset('test_data'  , data = teX) 
-f.create_dataset('test_label' , data = teL) 
-f.create_dataset('idx'        , data = idx) 
-f.create_dataset('minmax'     , data =[MIN,MAX]) 
-f.close()             
+#f = h5py.File("Ndata_batch.h5", "w")
+#f.create_dataset('train_data' , data = trX) 
+#f.create_dataset('train_label', data = trL) 
+#f.create_dataset('test_data'  , data = teX) 
+#f.create_dataset('test_label' , data = teL) 
+#f.create_dataset('idx'        , data = idx) 
+#f.create_dataset('minmax'     , data =[MIN,MAX]) 
+#f.close()             
         
-            
+f = h5py.File("batch.h5", "w")
+f.create_dataset('Kdata' , data = Ktensor)
+f.create_dataset('Mdata' , data = Mtensor)  
+
+f.close()              
             
             
             

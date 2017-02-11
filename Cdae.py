@@ -27,10 +27,10 @@ x_origin_noise = tf.reshape(x_noise, [-1, 30, 33, 1])
     
     
 # initialize weight
-W_e_init1 = tf.truncated_normal([5, 5, 1, 16], mean=0.0, stddev=0.01)
-W_e_init2 = tf.truncated_normal([5, 5, 16,32], mean=0.0, stddev=0.01)
-W_d_init1 = tf.truncated_normal([5, 5, 16,32], mean=0.0, stddev=0.01)
-W_d_init2 = tf.truncated_normal([5, 5, 1, 16], mean=0.0, stddev=0.01)
+W_e_init1 = tf.truncated_normal([3, 33, 1, 16], mean=0.0, stddev=0.01)
+W_e_init2 = tf.truncated_normal([3, 33, 16,32], mean=0.0, stddev=0.01)
+W_d_init1 = tf.truncated_normal([3, 33, 16,32], mean=0.0, stddev=0.01)
+W_d_init2 = tf.truncated_normal([3, 33,  1,16], mean=0.0, stddev=0.01)
     
 
 #encoder
@@ -50,23 +50,25 @@ print("code layer shape : %s" % h_e_conv2.get_shape())
 #decoder
 
 W_d_conv1 = tf.Variable(W_d_init1 , name = 'W_d_1')
-b_d_conv1 = tf.Variable(tf.constant(0.1,shape = [32]), name='b_d_1')
-output_shape_d_conv1 = tf.pack([tf.shape(x)[0], 15, 17, 16])
-h_d_conv1 = tf.nn.relu(deconv2d(tf.add(h_e_conv2,b_d_conv1), W_d_conv1,output_shape_d_conv1))
+b_d_conv1 = tf.Variable(tf.constant(0.1,shape = [16]), name='b_d_1')
+output_shape_d_conv1 = tf.pack([tf.shape(x)[0], 15, 17,16])
+h_d_conv1 = tf.nn.relu(tf.add(deconv2d(h_e_conv2, W_d_conv1,output_shape_d_conv1),b_d_conv1))
 
 #h_d_conv1 = tf.nn.relu(tf.add(conv2d((h_e_conv2, W_d_conv1,output_shape_d_conv1), b_d_conv1)))
 
 W_d_conv2 = tf.Variable(W_d_init2 , name = 'W_d_2')
-b_d_conv2 = tf.Variable(tf.constant(0.1,shape = [16]), name='b_d_2')
+b_d_conv2 = tf.Variable(tf.constant(0.1,shape = [1]), name='b_d_2')
 output_shape_d_conv2 = tf.pack([tf.shape(x)[0], 30, 33,1])
-h_d_conv2 = tf.nn.relu(deconv2d(tf.add(h_d_conv1,b_d_conv2), W_d_conv2,output_shape_d_conv2))
+h_d_conv2 = tf.nn.relu(tf.add(deconv2d(h_d_conv1, W_d_conv2,output_shape_d_conv2),b_d_conv2))
 #h_d_conv2 = tf.nn.relu(tf.add(deconv2d((h_d_conv1, W_d_conv2,output_shape_d_conv1), b_d_conv2)))
 
 x_reconstruct = h_d_conv2[:,:,:,0]
 print("reconstruct layer shape : %s" % x_reconstruct.get_shape())
 
 cost = tf.reduce_mean(tf.pow(x_reconstruct - x, 2))
-optimizer = tf.train.AdamOptimizer(0.00001).minimize(cost)
+optimizer = tf.train.AdamOptimizer(0.0001).minimize(cost)
+#optimizer = tf.train.GradientDescentOptimizer(0.001).minimize(cost)
+
 
 sess = tf.InteractiveSession()
 batch_size = 16
@@ -83,7 +85,7 @@ minmax   = h5py.File('Ndata_batch.h5','r')['minmax'][:]
 idx = np.arange(f_train.shape[0])
 sf(idx)
 
-for epoch in range(30000):
+for epoch in range(10000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
@@ -102,7 +104,21 @@ for epoch in range(30000):
     
     optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise})
 
-print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
+#print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
+KKK = sess.run(h_d_conv2, feed_dict={x: batch_raw, x_noise: batch_noise})
+
+
+f = h5py.File("model0210.h5", "w")
+f.create_dataset('We1'  , data = W_e_init1.eval()) 
+f.create_dataset('We2'  , data = W_e_init2.eval()) 
+f.create_dataset('Wd1'  , data = W_d_init1.eval()) 
+f.create_dataset('Wd2'  , data = W_d_init2.eval()) 
+f.create_dataset('be1'  , data = b_e_conv1.eval()) 
+f.create_dataset('be2'  , data = b_e_conv2.eval()) 
+f.create_dataset('bd1'  , data = b_d_conv1.eval()) 
+f.create_dataset('bd2'  , data = b_d_conv2.eval()) 
+f.create_dataset('minmax' , data = minmax) 
+f.close() 
 
 
 
