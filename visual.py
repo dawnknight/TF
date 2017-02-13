@@ -8,21 +8,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import h5py
-[MIN,MAX]  = h5py.File('model0210.h5','r')['minmax'][:]
-Kmod = h5py.File('btest.h5','r')['Kdata_mod'][:]
-Mcam = h5py.File('btest.h5','r')['Mdata'][:]
-Kcam = h5py.File('btest.h5','r')['Kdata'][:]
+[MIN,MAX]  = h5py.File('model0213.h5','r')['minmax'][:]
+Kmod = h5py.File('batch0213.h5','r')['Kdata_mod'][:]
+Mcam = h5py.File('batch0213.h5','r')['Mdata'][:]
+Kcam = h5py.File('batch0213.h5','r')['Kdata'][:]
 
 def visual(Kmod,Mcam,Kcam,idx=0,vtype = 0):
     
     
-    tmp = np.zeros([33,30])
+    tmp = np.zeros([18,30])
     tmp[:] = Kmod.T[0,:,:,idx]
     
-    Mtmp = np.zeros([33,30])
+    Mtmp = np.zeros([18,30])
     Mtmp[:] = Kcam.T[:,:,idx]
     
-    ktmp = np.zeros([33,30])
+    ktmp = np.zeros([18,30])
     ktmp[:] = Kmod.T[0,:,:,idx]
 
     
@@ -67,4 +67,4 @@ def visual(Kmod,Mcam,Kcam,idx=0,vtype = 0):
         ax.set_zlim(50,600)
         plt.legend( loc=1)
         plt.draw()
-        plt.pause(1.0/120)
+        plt.pause(1.0/10)

@@ -10,8 +10,8 @@ import cPickle,h5py
 import numpy as np
 import pdb
 
-KData_root = 'Unified_KData'
-MData_root = 'Unified_MData'
+KData_root = 'D:\\Project\\PyKinect2-master\\Kproject\\data\\Motion and Kinect\\Unified_KData'
+MData_root = 'D:\\Project\\PyKinect2-master\\Kproject\\data\\Motion and Kinect\\Unified_MData'
 
 Output_root = 'Concatenate_Data\\'
 
@@ -31,8 +31,8 @@ for file_idx in xrange(len(file_tail_list)):
         len_stand = min(len(Kdata[0][0]),len(Mdata[0][0]))
         
         # concatenate all joints of one person
-        for i in [0,1,2,3,4,5,6,8,9,10,20]:
-            if i == 0:
+        for i in [4,5,6,8,9,10]:#[0,1,2,3,4,5,6,8,9,10,20]:
+            if i == 4:
                 Kjoints_1_person = Kdata[i]
                 Mjoints_1_person = Mdata[i]
             else:
@@ -55,13 +55,13 @@ for file_idx in xrange(len(file_tail_list)):
     else:
         print 'Data generating process is wrong'
     
-    cPickle.dump(Kjoints_1_ex,file(Output_root + 'K_'+file_tail_list[file_idx]+'.pkl','wb'))
-    cPickle.dump(Mjoints_1_ex,file(Output_root + 'M_'+file_tail_list[file_idx]+'.pkl','wb'))
+    cPickle.dump(Kjoints_1_ex,file(Output_root + 'limb_K_'+file_tail_list[file_idx]+'.pkl','wb'))
+    cPickle.dump(Mjoints_1_ex,file(Output_root + 'limb_M_'+file_tail_list[file_idx]+'.pkl','wb'))
     
     
 from random import shuffle as sf
-K = cPickle.load(file('./Concatenate_Data/K_ex4.pkl','r'))
-M = cPickle.load(file('./Concatenate_Data/M_ex4.pkl','r'))
+K = cPickle.load(file('./Concatenate_Data/limb_K_ex4.pkl','r'))
+M = cPickle.load(file('./Concatenate_Data/limb_M_ex4.pkl','r'))
 
 MAX = np.max([K.max(),M.max()])
 MIN = np.min([K.min(),M.min()])
@@ -105,7 +105,7 @@ NteL = NsM[:,:int(0.2*K.shape[1])]
 NtrL = NsM[:,int(0.2*K.shape[1]):]
 
 
-f = h5py.File("data.h5", "w")
+f = h5py.File("Ldata.h5", "w")
 f.create_dataset('train_data' , data = trX) 
 f.create_dataset('train_label', data = trL) 
 f.create_dataset('test_data'  , data = teX) 
@@ -115,7 +115,7 @@ f.create_dataset('minmax'     , data =[MIN,MAX])
 f.close() 
 
 
-f = h5py.File("Ndata.h5", "w")
+f = h5py.File("NLdata.h5", "w")
 f.create_dataset('train_data' , data = NtrX) 
 f.create_dataset('train_label', data = NtrL) 
 f.create_dataset('test_data'  , data = NteX) 

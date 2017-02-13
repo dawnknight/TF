@@ -17,7 +17,7 @@ Kfolder = 'Unified_KData/'
 Mfolder = 'Unified_MData/'
 
 batchsize = 30 # group of joints
-jnum = 33
+jnum = 18
 index = 0
 
 #st = time.clock()
@@ -74,8 +74,8 @@ for kinfile,minfile in zip(glob.glob(os.path.join(path+Kfolder,'*ex4.pkl')),glob
     Ksubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
     Msubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
     
-    for i in kdata.keys():
-        if i == 0:
+    for i in [4,5,6,8,9,10]:#kdata.keys():
+        if i == 4:
             Kjoints = kdata[i]
             Mjoints = mdata[i]
         else:
@@ -115,14 +115,14 @@ teL   = NM[:,:,:int(0.2*sum(LEN))]
 trX   = NK[:,:,int(0.2*sum(LEN)):]
 trL   = NM[:,:,int(0.2*sum(LEN)):] 
 
-#f = h5py.File("Ndata_batch.h5", "w")
-#f.create_dataset('train_data' , data = trX) 
-#f.create_dataset('train_label', data = trL) 
-#f.create_dataset('test_data'  , data = teX) 
-#f.create_dataset('test_label' , data = teL) 
-#f.create_dataset('idx'        , data = idx) 
-#f.create_dataset('minmax'     , data =[MIN,MAX]) 
-#f.close()             
+f = h5py.File("NLdata_batch.h5", "w")
+f.create_dataset('train_data' , data = trX) 
+f.create_dataset('train_label', data = trL) 
+f.create_dataset('test_data'  , data = teX) 
+f.create_dataset('test_label' , data = teL) 
+f.create_dataset('idx'        , data = idx) 
+f.create_dataset('minmax'     , data =[MIN,MAX]) 
+f.close()             
         
 f = h5py.File("batch.h5", "w")
 f.create_dataset('Kdata' , data = Ktensor)
