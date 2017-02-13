@@ -122,7 +122,12 @@ f.close()
 
 
 
-
+#f = h5py.File("btest.h5", "w")
+#f.create_dataset('Kdata' , data = batch_noise)
+#f.create_dataset('Kdata_mod' , data = KKK)
+#f.create_dataset('Mdata' , data = batch_raw)  
+#
+#f.close()    
 
 
 
