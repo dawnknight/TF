@@ -14,19 +14,19 @@ import tensorflow as tf
 
 
 def conv2d(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 2, 2, 1], padding = 'SAME')
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding = 'SAME')
 
 def deconv2d(x, W, output_shape):
-    return tf.nn.conv2d_transpose(x, W, output_shape, strides = [1, 2, 2, 1], padding = 'SAME')
+    return tf.nn.conv2d_transpose(x, W, output_shape, strides = [1, 1, 1, 1], padding = 'SAME')
 
 We1   = h5py.File('model0210.h5','r')['We1'][:]
 We2   = h5py.File('model0210.h5','r')['We2'][:]
-Wd1  = h5py.File('model0210.h5','r')['Wd1'][:]
-Wd2  = h5py.File('model0210.h5','r')['Wd2'][:]
+Wd1   = h5py.File('model0210.h5','r')['Wd1'][:]
+Wd2   = h5py.File('model0210.h5','r')['Wd2'][:]
 be1   = h5py.File('model0210.h5','r')['be1'][:]
 be2   = h5py.File('model0210.h5','r')['be2'][:]
-bd1  = h5py.File('model0210.h5','r')['bd1'][:]
-bd2  = h5py.File('model0210.h5','r')['bd2'][:]
+bd1   = h5py.File('model0210.h5','r')['bd1'][:]
+bd2   = h5py.File('model0210.h5','r')['bd2'][:]
 [MIN,MAX]  = h5py.File('model0210.h5','r')['minmax'][:]
 
 
