@@ -6,30 +6,37 @@ Created on Thu Feb  2 13:58:47 2017
 """
 
 import tensorflow as tf
-import matplotlib.pyplot as plt
+
 import numpy as np
 import h5py
 from random import shuffle as sf
 
-n_hidden1 = 128
-n_hidden2 = 256
-spts = 18 #sample points per frame (joints number *3)
+n_hidden1 = 64
+n_hidden2 = 128
+
+We1 = h5py.File("./data/FC/We1.h5", "w")  
+We2 = h5py.File("./data/FC/We2.h5", "w")
+
+be1 = h5py.File("./data/FC/be1.h5", "w")  
+be2 = h5py.File("./data/FC/be2.h5", "w")
+bd1 = h5py.File("./data/FC/bd1.h5", "w")  
+bd2 = h5py.File("./data/FC/bd2.h5", "w")
 
 # set a placeholder for future input
-x = tf.placeholder(tf.float32, shape = [None, spts])
-x_noise = tf.placeholder(tf.float32, shape = [None, spts])
+x = tf.placeholder(tf.float32, shape = [None, 18])
+x_noise = tf.placeholder(tf.float32, shape = [None, 18])
 
 
 
-W_init1  = tf.truncated_normal(shape=[spts, n_hidden1],stddev=0.01)
+W_init1  = tf.truncated_normal(shape=[18, n_hidden1],stddev=0.01)
 W_init2  = tf.truncated_normal(shape=[n_hidden1,n_hidden2],stddev=0.01)
 Wp_init1 = tf.truncated_normal(shape=[n_hidden2, n_hidden1],stddev=0.01)
-Wp_init2 = tf.truncated_normal(shape=[n_hidden1,spts],stddev=0.01)
+Wp_init2 = tf.truncated_normal(shape=[n_hidden1,18],stddev=0.01)
 
 # encoder
-W1= tf.Variable(W_init1, name='W1')#shape:spts*512
+W1= tf.Variable(W_init1, name='W1')#shape:18*512
 b1 = tf.Variable(tf.constant(0.1,shape = [n_hidden1]), name='b1')#bias
-W2= tf.Variable(W_init2, name='W2')#shape:spts*512
+W2= tf.Variable(W_init2, name='W2')#shape:18*512
 b2 = tf.Variable(tf.constant(0.1,shape = [n_hidden2]), name='b2')#bias
 
 #decoder
@@ -38,7 +45,7 @@ W_prime1 = tf.transpose(W2)
 b_prime1 = tf.Variable(tf.constant(0.1,shape = [n_hidden1]), name='b1_prime')
 W_prime2 = tf.transpose(W1)  
 #W_prime2 = tf.Variable(Wp_init2, name='Wp2')
-b_prime2 = tf.Variable(tf.constant(0.1,shape = [spts]), name='b2_prime')
+b_prime2 = tf.Variable(tf.constant(0.1,shape = [18]), name='b2_prime')
 
 
 h_e_1 = tf.nn.relu(tf.matmul(x_noise,W1)+b1)
@@ -59,16 +66,16 @@ counter = 0
 init_op = tf.global_variables_initializer()
 sess.run(init_op)
 
-f_test   = h5py.File('Ndata.h5','r')['test_data'][:].T
-f_telab  = h5py.File('Ndata.h5','r')['test_label'][:].T
-f_train  = h5py.File('Ndata.h5','r')['train_data'][:].T
-f_trlab  = h5py.File('Ndata.h5','r')['train_label'][:].T
-minmax   = h5py.File('Ndata.h5','r')['minmax'][:]
+f_test   = h5py.File('./data/NLdata.h5','r')['test_data'][:].T
+f_telab  = h5py.File('./data/NLdata.h5','r')['test_label'][:].T
+f_train  = h5py.File('./data/NLdata.h5','r')['train_data'][:].T
+f_trlab  = h5py.File('./data/NLdata.h5','r')['train_label'][:].T
+minmax   = h5py.File('./data/NLdata.h5','r')['minmax'][:]
 
 idx = np.arange(f_train.shape[0])
 sf(idx)
 
-for epoch in range(30000):
+for epoch in range(3000000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
@@ -81,19 +88,34 @@ for epoch in range(30000):
     counter += 1
      
         
-    if epoch < 1500:
-        if epoch%100 == 0:
-            print("step %d, loss %g"%(epoch, cost.eval(feed_dict={x:batch_raw, x_noise: batch_noise})))
-    else:
-        if epoch%1000 == 0: 
-            print("step %d, loss %g"%(epoch, cost.eval(feed_dict={x:batch_raw, x_noise: batch_noise})))
+    if epoch%1000 == 0: 
+        print("step %d, loss %g"%(epoch, cost.eval(feed_dict={x:batch_raw, x_noise: batch_noise})))
+        ewname1 = 'w_e_1_' + str(epoch//1000)
+        ewname2 = 'w_e_2_' + str(epoch//1000)
+        ebname1 = 'b_e_1_' + str(epoch//1000)
+        ebname2 = 'b_e_2_' + str(epoch//1000)
+        dbname1 = 'b_d_1_' + str(epoch//1000)
+        dbname2 = 'b_d_2_' + str(epoch//1000)
+        
+        We1.create_dataset(ewname1 , data = W1.eval())
+        We2.create_dataset(ewname2 , data = W2.eval())
+        be1.create_dataset(ebname1 , data = b1.eval())
+        be2.create_dataset(ebname2 , data = b2.eval())
+        bd1.create_dataset(dbname1 , data = b_prime1.eval())
+        bd2.create_dataset(dbname2 , data = b_prime2.eval())
     
     optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise})
 
 
 print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
 
+We1.close()
+We2.close()
 
+be1.close()
+be2.close()
+bd1.close()
+bd2.close()
 
 
 f = h5py.File("model.h5", "w")
