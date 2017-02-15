@@ -125,10 +125,20 @@ f.create_dataset('minmax'     , data =[MIN,MAX])
 f.close() 
 
     
-    
-    
-    
-    
+#build taro data
+idx = np.array([0,1,2,3,10]) # joints id 0,1,2,3,20
+bias = np.array([0,1,2])
+
+taro_idx = np.tile(idx,(3,1)).T.flatten()*3+np.tile(bias,len(idx))
+
+K_taro = K[taro_idx,:]
+M_taro = M[taro_idx,:]   
+
+f = h5py.File("./data/KM_taro.h5", "w")
+f.create_dataset('Ktaro' , data = K_taro)
+f.create_dataset('Mtaro' , data = M_taro )  
+
+f.close()           
     
     
     

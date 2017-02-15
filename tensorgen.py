@@ -9,8 +9,8 @@ import numpy as np
 from random import shuffle as sf
 
 
-#path = 'C:/Users/Dawnknight/Documents/GitHub/Kproject/data/Motion and Kinect/'
-path  = 'D:\Project\PyKinect2-master\Kproject\data\Motion and Kinect/'
+path = 'C:/Users/Dawnknight/Documents/GitHub/Kproject/data/Motion and Kinect/'
+#path  = 'D:\Project\PyKinect2-master\Kproject\data\Motion and Kinect\'
 
 
 Kfolder = 'Unified_KData/'
@@ -74,8 +74,8 @@ for kinfile,minfile in zip(glob.glob(os.path.join(path+Kfolder,'*ex4.pkl')),glob
     Ksubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
     Msubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
     
-    for i in [4,5,6,8,9,10]:#kdata.keys():
-        if i == 4:
+    for i in kdata.keys():#[4,5,6,8,9,10]:
+        if i == 0:
             Kjoints = kdata[i]
             Mjoints = mdata[i]
         else:
@@ -99,6 +99,8 @@ for i in range(index-1):
         start = end
 
 
+        
+        
 idx = range(sum(LEN))
 testrate = 0.2
 sf(idx)

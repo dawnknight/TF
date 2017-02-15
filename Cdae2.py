@@ -64,6 +64,8 @@ output_shape_d_conv1 = tf.pack([tf.shape(x)[0], 30, 18,16])
 h_d_conv1 = tf.nn.relu(tf.add(deconv2d(h_e_conv2, W_d_conv1,output_shape_d_conv1),b_d_conv1))
 
 #h_d_conv1 = tf.nn.relu(tf.add(conv2d((h_e_conv2, W_d_conv1,output_shape_d_conv1), b_d_conv1)))
+print("d1layer shape : %s" % h_d_conv1.get_shape())
+
 
 W_d_conv2 = tf.Variable(W_d_init2 , name = 'W_d_2')
 b_d_conv2 = tf.Variable(tf.constant(0.1,shape = [1]), name='b_d_2')
@@ -96,7 +98,7 @@ sf(idx)
 
 
 
-for epoch in range(100):
+for epoch in range(30000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
@@ -112,56 +114,60 @@ for epoch in range(100):
 #    else:
     if epoch%1000 == 0: 
         print("step %d, loss %g"%(epoch, cost.eval(feed_dict={x:batch_raw, x_noise: batch_noise})))
-#        ewname1 = 'w_e_conv1_' + str(epoch//1000)
-#        ewname2 = 'w_e_conv2_' + str(epoch//1000)
-#        dwname1 = 'w_d_conv1_' + str(epoch//1000)
-#        dwname2 = 'w_d_conv2_' + str(epoch//1000)
-#        ebname1 = 'b_e_conv1_' + str(epoch//1000)
-#        ebname2 = 'b_e_conv2_' + str(epoch//1000)
-#        dbname1 = 'b_d_conv1_' + str(epoch//1000)
-#        dbname2 = 'b_d_conv2_' + str(epoch//1000)
-#        
-#        We1.create_dataset(ewname1 , data = W_e_conv1.eval())
-#        We2.create_dataset(ewname2 , data = W_e_conv2.eval())
-#        Wd1.create_dataset(dwname1 , data = W_d_conv1.eval())
-#        Wd2.create_dataset(dwname2 , data = W_d_conv2.eval())
-#        
-#        be1.create_dataset(ebname1 , data = b_e_conv1.eval())
-#        be2.create_dataset(ebname2 , data = b_e_conv2.eval())
-#        bd1.create_dataset(dbname1 , data = b_d_conv1.eval())
-#        bd2.create_dataset(dbname2 , data = b_d_conv2.eval())          
+        ewname1 = 'w_e_conv1_' + str(epoch//1000)
+        ewname2 = 'w_e_conv2_' + str(epoch//1000)
+        dwname1 = 'w_d_conv1_' + str(epoch//1000)
+        dwname2 = 'w_d_conv2_' + str(epoch//1000)
+        ebname1 = 'b_e_conv1_' + str(epoch//1000)
+        ebname2 = 'b_e_conv2_' + str(epoch//1000)
+        dbname1 = 'b_d_conv1_' + str(epoch//1000)
+        dbname2 = 'b_d_conv2_' + str(epoch//1000)
+        
+        We1.create_dataset(ewname1 , data = W_e_conv1.eval())
+        We2.create_dataset(ewname2 , data = W_e_conv2.eval())
+        Wd1.create_dataset(dwname1 , data = W_d_conv1.eval())
+        Wd2.create_dataset(dwname2 , data = W_d_conv2.eval())
+        
+        be1.create_dataset(ebname1 , data = b_e_conv1.eval())
+        be2.create_dataset(ebname2 , data = b_e_conv2.eval())
+        bd1.create_dataset(dbname1 , data = b_d_conv1.eval())
+        bd2.create_dataset(dbname2 , data = b_d_conv2.eval())          
     
     
         
-#    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise})
+    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise})
 
 #print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
 
-aaa = sess.run(output_shape_d_conv1,feed_dict={x:batch_raw})
-KKK = sess.run(h_d_conv1, feed_dict={x: batch_raw, x_noise: batch_noise})
+#aaa = sess.run(h_d_conv1,feed_dict={x:batch_raw})
+#Ke1 = sess.run(h_e_conv1, feed_dict={x: batch_raw, x_noise: batch_noise})
+#Ke2 = sess.run(h_e_conv2, feed_dict={x: batch_raw, x_noise: batch_noise})
+#Kd1 = sess.run(h_d_conv1, feed_dict={x: batch_raw, x_noise: batch_noise})
+#Kd2 = sess.run(h_d_conv2, feed_dict={x: batch_raw, x_noise: batch_noise})
 
-#We1.close()
-#We2.close()
-#Wd1.close()
-#Wd2.close()
+
+We1.close()
+We2.close()
+Wd1.close()
+Wd2.close()
+
+be1.close()
+be2.close()
+bd1.close()
+bd2.close()
 #
-#be1.close()
-#be2.close()
-#bd1.close()
-#bd2.close()
-#
-#f = h5py.File("model0213_2.h5", "w")
-#f.create_dataset('We1'  , data = W_e_conv1.eval()) 
-#f.create_dataset('We2'  , data = W_e_conv2.eval()) 
-#f.create_dataset('Wd1'  , data = W_d_conv1.eval()) 
-#f.create_dataset('Wd2'  , data = W_d_conv2.eval()) 
-#f.create_dataset('be1'  , data = b_e_conv1.eval()) 
-#f.create_dataset('be2'  , data = b_e_conv2.eval()) 
-#f.create_dataset('bd1'  , data = b_d_conv1.eval()) 
-#f.create_dataset('bd2'  , data = b_d_conv2.eval()) 
-#f.create_dataset('minmax' , data = minmax) 
-#f.close() 
-#
-#
-#
-#
+f = h5py.File("model0213_2.h5", "w")
+f.create_dataset('We1'  , data = W_e_conv1.eval()) 
+f.create_dataset('We2'  , data = W_e_conv2.eval()) 
+f.create_dataset('Wd1'  , data = W_d_conv1.eval()) 
+f.create_dataset('Wd2'  , data = W_d_conv2.eval()) 
+f.create_dataset('be1'  , data = b_e_conv1.eval()) 
+f.create_dataset('be2'  , data = b_e_conv2.eval()) 
+f.create_dataset('bd1'  , data = b_d_conv1.eval()) 
+f.create_dataset('bd2'  , data = b_d_conv2.eval()) 
+f.create_dataset('minmax' , data = minmax) 
+f.close() 
+
+
+
+
