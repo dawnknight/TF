@@ -64,7 +64,7 @@ def CNNanichk(idx =1,start = 200, taro = False , Type = 'CNN'):
         
         sess = tf.InteractiveSession()
         batch_size = 16
-    
+        loop = 5
         #    start = 200
         
         tmp = np.ones([18,90])
@@ -114,10 +114,11 @@ def CNNanichk(idx =1,start = 200, taro = False , Type = 'CNN'):
         
         sess = tf.InteractiveSession()
         
-        batch_size =32
-        tmp = np.ones([18,96])
+        batch_size = 32
+        loop = 5
+        tmp = np.ones([18,batch_size*loop])
         
-        for i in range(3):
+        for i in range(loop):
             batch_raw = np.zeros([batch_size,spts])
             batch_raw[:] = NK[:,start+i*batch_size:start+(i+1)*batch_size].T
 
@@ -140,7 +141,7 @@ def CNNanichk(idx =1,start = 200, taro = False , Type = 'CNN'):
     ax.set_ylabel('X axis')
     ax.set_zlabel('Y axis')    
     
-    for i in range(90):
+    for i in range(batch_size*loop):
         plt.cla()
         kxm = KJ_mod.T[i,::3]
         kym = KJ_mod.T[i,1::3]
@@ -175,7 +176,7 @@ def CNNanichk(idx =1,start = 200, taro = False , Type = 'CNN'):
         ax.set_xlim(-300,300)
         ax.set_ylim(-200,400)
         ax.set_zlim(50,600)
-        ax.set_title('frame no : '+str(i)+'  training '+ str(idx*1000) +' times ' )
+        ax.set_title('frame no : '+str(i+start)+'  training '+ str(idx*1000) +' times ' )
         ax.set_xlabel('Z axis')
         ax.set_ylabel('X axis')
         ax.set_zlabel('Y axis')

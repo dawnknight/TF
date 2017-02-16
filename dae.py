@@ -11,8 +11,8 @@ import numpy as np
 import h5py
 from random import shuffle as sf
 
-n_hidden1 = 128
-n_hidden2 = 256
+n_hidden1 = 64
+n_hidden2 = 128
 spts = 18 #sample points per frame (joints number *3)
 
 # set a placeholder for future input
