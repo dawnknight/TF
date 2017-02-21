@@ -11,13 +11,22 @@ import numpy as np
 import h5py
 from random import shuffle as sf
 
-n_hidden1 = 64
-n_hidden2 = 128
+n_hidden1 = 8
+n_hidden2 = 16
 spts = 3 #sample points per frame (joints number *3)
 
+# NLdata.h5 made by concatenate.py
+f_test   = h5py.File('./data/NLdata.h5','r')['test_data'][:].T
+f_telab  = h5py.File('./data/NLdata.h5','r')['test_label'][:].T
+f_train  = h5py.File('./data/NLdata.h5','r')['train_data'][:].T
+f_trlab  = h5py.File('./data/NLdata.h5','r')['train_label'][:].T
+minmax   = h5py.File('./data/NLdata.h5','r')['minmax'][:]
+    
 
 for i in range(6):
 
+    print('Joint Group ' +str(i+1))
+    
     # set a placeholder for future input
     x = tf.placeholder(tf.float32, shape = [None, spts])
     x_noise = tf.placeholder(tf.float32, shape = [None, spts])
@@ -57,17 +66,12 @@ for i in range(6):
     
     
     sess = tf.InteractiveSession()
-    batch_size = 32
+    batch_size = 8
     counter = 0
     init_op = tf.global_variables_initializer()
     sess.run(init_op)
     
-    f_test   = h5py.File('./data/NLdata.h5','r')['test_data'][:].T
-    f_telab  = h5py.File('./data/NLdata.h5','r')['test_label'][:].T
-    f_train  = h5py.File('./data/NLdata.h5','r')['train_data'][:].T
-    f_trlab  = h5py.File('./data/NLdata.h5','r')['train_label'][:].T
-    minmax   = h5py.File('./data/NLdata.h5','r')['minmax'][:]
-    
+
     idx = np.arange(f_train.shape[0])
     sf(idx)
     
@@ -87,5 +91,17 @@ for i in range(6):
         
         optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise})
     
-    
-#    print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test}))
+    filename = 'single_' + str(i) +'.h5'    
+    f = h5py.File(filename, "w")
+    f.create_dataset('W1'  , data = W1.eval()) 
+    f.create_dataset('W2'  , data = W2.eval()) 
+    f.create_dataset('b1'  , data = b1.eval()) 
+    f.create_dataset('b2'  , data = b2.eval()) 
+    f.create_dataset('bp1' , data = b_prime1.eval()) 
+    f.create_dataset('bp2' , data = b_prime2.eval()) 
+    f.create_dataset('minmax' , data = minmax) 
+    f.close() 
+        
+        
+        
+

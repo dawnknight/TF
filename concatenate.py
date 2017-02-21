@@ -31,8 +31,8 @@ for file_idx in xrange(len(file_tail_list)):
         len_stand = min(len(Kdata[0][0]),len(Mdata[0][0]))
         
         # concatenate all joints of one person
-        for i in [4,5,6,8,9,10]:#[0,1,2,3,4,5,6,8,9,10,20]:
-            if i == 4:
+        for i in [0,1,2,3,4,5,6,8,9,10,20]:#[4,5,6,8,9,10]:#
+            if i == 0:
                 Kjoints_1_person = Kdata[i]
                 Mjoints_1_person = Mdata[i]
             else:
@@ -55,13 +55,18 @@ for file_idx in xrange(len(file_tail_list)):
     else:
         print 'Data generating process is wrong'
     
-    cPickle.dump(Kjoints_1_ex,file(Output_root + 'limb_K_'+file_tail_list[file_idx]+'.pkl','wb'))
-    cPickle.dump(Mjoints_1_ex,file(Output_root + 'limb_M_'+file_tail_list[file_idx]+'.pkl','wb'))
-    
+    cPickle.dump(Kjoints_1_ex,file(Output_root + 'K_'+file_tail_list[file_idx]+'.pkl','wb'))
+    cPickle.dump(Mjoints_1_ex,file(Output_root + 'M_'+file_tail_list[file_idx]+'.pkl','wb'))
+#    cPickle.dump(Kjoints_1_ex,file(Output_root + 'limb_K_'+file_tail_list[file_idx]+'.pkl','wb'))
+#    cPickle.dump(Mjoints_1_ex,file(Output_root + 'limb_M_'+file_tail_list[file_idx]+'.pkl','wb'))    
     
 from random import shuffle as sf
-K = cPickle.load(file('./Concatenate_Data/limb_K_ex4.pkl','r'))
-M = cPickle.load(file('./Concatenate_Data/limb_M_ex4.pkl','r'))
+
+exeno = 'ex4'
+K = cPickle.load(file('./Concatenate_Data/limb_K_'+exeno+'.pkl','r'))
+M = cPickle.load(file('./Concatenate_Data/limb_M_'+exeno+'.pkl','r'))
+#K = cPickle.load(file('./Concatenate_Data/K_'+exeno+'.pkl','r'))
+#M = cPickle.load(file('./Concatenate_Data/M_'+exeno+'.pkl','r'))
 
 MAX = np.max([K.max(),M.max()])
 MIN = np.min([K.min(),M.min()])
@@ -125,7 +130,7 @@ f.create_dataset('minmax'     , data =[MIN,MAX])
 f.close() 
 
     
-#build taro data
+##build taro data
 idx = np.array([0,1,2,3,10]) # joints id 0,1,2,3,20
 bias = np.array([0,1,2])
 
@@ -134,12 +139,17 @@ taro_idx = np.tile(idx,(3,1)).T.flatten()*3+np.tile(bias,len(idx))
 K_taro = K[taro_idx,:]
 M_taro = M[taro_idx,:]   
 
-f = h5py.File("./data/KM_taro.h5", "w")
+f = h5py.File('./data/KM_taro_'+exeno+'.h5', "w")
 f.create_dataset('Ktaro' , data = K_taro)
 f.create_dataset('Mtaro' , data = M_taro )  
 
 f.close()           
+
+#build K and M data 
     
-    
-    
-    
+f = h5py.File('./data/limb_KandM_'+exeno+'.h5', "w")
+f.create_dataset('N_Kinect' , data = (K-MIN)/(MAX-MIN))
+f.create_dataset('N_Mcam'   , data = (M-MIN)/(MAX-MIN))
+f.create_dataset('Kinect'   , data = K)      
+f.create_dataset('Mcam'     , data = M)       
+f.close()     
