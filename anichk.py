@@ -98,12 +98,12 @@ def Anichk(idx =1,start = 200, taro = False , Type = 'CNN'):
 
         spts = 18 #sample points per frame (joints number *3)
         
-        W1  = h5py.File('./data/FC/We1.h5','r')['w_e_1_'+str(idx)][:]
-        W2  = h5py.File('./data/FC/We2.h5','r')['w_e_2_'+str(idx)][:]
-        be1 = h5py.File('./data/FC/be1.h5','r')['b_e_1_'+str(idx)][:]
-        be2 = h5py.File('./data/FC/be2.h5','r')['b_e_2_'+str(idx)][:]
-        bd1 = h5py.File('./data/FC/bd1.h5','r')['b_d_1_'+str(idx)][:]
-        bd2 = h5py.File('./data/FC/bd2.h5','r')['b_d_2_'+str(idx)][:] 
+        W1  = h5py.File('./data/FC/We1_drop.h5','r')['w_e_1_'+str(idx)][:]
+        W2  = h5py.File('./data/FC/We2_drop.h5','r')['w_e_2_'+str(idx)][:]
+        be1 = h5py.File('./data/FC/be1_drop.h5','r')['b_e_1_'+str(idx)][:]
+        be2 = h5py.File('./data/FC/be2_drop.h5','r')['b_e_2_'+str(idx)][:]
+        bd1 = h5py.File('./data/FC/bd1_drop.h5','r')['b_d_1_'+str(idx)][:]
+        bd2 = h5py.File('./data/FC/bd2_drop.h5','r')['b_d_2_'+str(idx)][:] 
         W_prime1 = tf.transpose(W2)
         W_prime2 = tf.transpose(W1)
         

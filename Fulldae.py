@@ -14,18 +14,18 @@ from random import shuffle as sf
 n_hidden1 = 64
 n_hidden2 = 128
 
-We1 = h5py.File("./data/FC/We1.h5", "w")  
-We2 = h5py.File("./data/FC/We2.h5", "w")
+We1 = h5py.File("./data/FC/We1_drop.h5", "w")  
+We2 = h5py.File("./data/FC/We2_drop.h5", "w")
 
-be1 = h5py.File("./data/FC/be1.h5", "w")  
-be2 = h5py.File("./data/FC/be2.h5", "w")
-bd1 = h5py.File("./data/FC/bd1.h5", "w")  
-bd2 = h5py.File("./data/FC/bd2.h5", "w")
+be1 = h5py.File("./data/FC/be1_drop.h5", "w")  
+be2 = h5py.File("./data/FC/be2_drop.h5", "w")
+bd1 = h5py.File("./data/FC/bd1_drop.h5", "w")  
+bd2 = h5py.File("./data/FC/bd2_drop.h5", "w")
 
 # set a placeholder for future input
 x = tf.placeholder(tf.float32, shape = [None, 18])
 x_noise = tf.placeholder(tf.float32, shape = [None, 18])
-
+keep_prob = tf.placeholder(tf.float32)
 
 
 W_init1  = tf.truncated_normal(shape=[18, n_hidden1],stddev=0.01)
@@ -48,10 +48,19 @@ W_prime2 = tf.transpose(W1)
 b_prime2 = tf.Variable(tf.constant(0.1,shape = [18]), name='b2_prime')
 
 
+#h_e_1 = tf.nn.relu(tf.matmul(x_noise,W1)+b1)
+#h_e_2 = tf.nn.relu(tf.matmul(h_e_1,W2)+b2)
+#h_d_1 = tf.nn.relu(tf.matmul(h_e_2,W_prime1)+b_prime1)
+#h_d_2 = tf.sigmoid(tf.matmul(h_d_1,W_prime2)+b_prime2)
+
 h_e_1 = tf.nn.relu(tf.matmul(x_noise,W1)+b1)
+h_e_1_drop = tf.nn.dropout(h_e_1, keep_prob)
 h_e_2 = tf.nn.relu(tf.matmul(h_e_1,W2)+b2)
+h_e_2_drop = tf.nn.dropout(h_e_2, keep_prob)
 h_d_1 = tf.nn.relu(tf.matmul(h_e_2,W_prime1)+b_prime1)
+h_d_1_drop = tf.nn.dropout(h_d_1, keep_prob)
 h_d_2 = tf.sigmoid(tf.matmul(h_d_1,W_prime2)+b_prime2)
+
 
 output = h_d_2
 
@@ -118,7 +127,7 @@ bd1.close()
 bd2.close()
 
 
-f = h5py.File("model.h5", "w")
+f = h5py.File("model_drop.h5", "w")
 f.create_dataset('W1'  , data = W1.eval()) 
 f.create_dataset('W2'  , data = W2.eval()) 
 f.create_dataset('Wp1' , data = W_prime1.eval()) 
