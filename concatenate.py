@@ -31,8 +31,8 @@ for file_idx in xrange(len(file_tail_list)):
         len_stand = min(len(Kdata[0][0]),len(Mdata[0][0]))
         
         # concatenate all joints of one person
-        for i in [0,1,2,3,4,5,6,8,9,10,20]:#[4,5,6,8,9,10]:#
-            if i == 0:
+        for i in [4,5,6,8,9,10]:#[0,1,2,3,4,5,6,8,9,10,20]:#
+            if i == 4:
                 Kjoints_1_person = Kdata[i]
                 Mjoints_1_person = Mdata[i]
             else:
