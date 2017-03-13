@@ -5,7 +5,7 @@ Created on Thu Feb 02 22:55:51 2017
 @author: Dawnknight
 """
 
-import cPickle,h5py
+import cPickle,h5py,math
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -72,12 +72,12 @@ for i in range(300,500):
     ky = joints[i,1::3]
     kz = joints[i,2::3]    
 
-#    ax.scatter(kz, kx, ky, c = 'blue', s = 100,label='Kinect Joints')    
-#    ax.scatter(mz, mx, my,c = 'green',s = 50,alpha=.4,label='MoCam Joints')
+    ax.scatter(kz, kx, ky, c = 'blue', s = 100,label='Kinect Joints')    
+    ax.scatter(mz, mx, my,c = 'green',s = 50,alpha=.4,label='MoCam Joints')
     ax.scatter(kzm, kxm, kym,c = 'red',s = 50,alpha=.4,label='K modified')
-#    ax.set_xlim(-300,300)
-#    ax.set_ylim(-200,400)
-#    ax.set_zlim(50,600)
+    ax.set_xlim(-300,300)
+    ax.set_ylim(-200,400)
+    ax.set_zlim(50,600)
     ax.set_title(i)
     ax.set_xlabel('Z axis')
     ax.set_ylabel('X axis')

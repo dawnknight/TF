@@ -10,10 +10,10 @@ import cPickle,h5py
 import numpy as np
 import pdb
 
-KData_root = 'D:\\Project\\PyKinect2-master\\Kproject\\data\\Motion and Kinect\\Unified_KData'
-MData_root = 'D:\\Project\\PyKinect2-master\\Kproject\\data\\Motion and Kinect\\Unified_MData'
+KData_root = 'I:/Unified_KData'
+MData_root = 'I:/Unified_MData'
 
-Output_root = 'Concatenate_Data\\'
+Output_root = './Concatenate_Data/'
 
 file_tail_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 
@@ -25,8 +25,8 @@ for file_idx in xrange(len(file_tail_list)):
 
     for idx in xrange(len(Kfile_name_list)):
         
-        Kdata = cPickle.load(file(Kfile_name_list[idx],'rb'))
-        Mdata = cPickle.load(file(Mfile_name_list[idx],'rb'))
+        Kdata = cPickle.load(file(Kfile_name_list[idx],'r'))
+        Mdata = cPickle.load(file(Mfile_name_list[idx],'r'))
         
         len_stand = min(len(Kdata[0][0]),len(Mdata[0][0]))
         
