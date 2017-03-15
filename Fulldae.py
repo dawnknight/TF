@@ -11,16 +11,20 @@ import numpy as np
 import h5py
 from random import shuffle as sf
 
+src_path = './Concatenate_Data/'
+date_ext = '_0306'
+
+
 n_hidden1 = 64
-n_hidden2 = 128
+n_hidden2 = 18
 
-We1 = h5py.File("./data/FC/We1.h5", "w")  
-We2 = h5py.File("./data/FC/We2.h5", "w")
+We1 = h5py.File('./data/FC/We1'+date_ext+'.h5', "w")  
+We2 = h5py.File('./data/FC/We2'+date_ext+'.h5', "w")
 
-be1 = h5py.File("./data/FC/be1.h5", "w")  
-be2 = h5py.File("./data/FC/be2.h5", "w")
-bd1 = h5py.File("./data/FC/bd1.h5", "w")  
-bd2 = h5py.File("./data/FC/bd2.h5", "w")
+be1 = h5py.File('./data/FC/be1'+date_ext+'.h5', "w")  
+be2 = h5py.File('./data/FC/be2'+date_ext+'.h5', "w")
+bd1 = h5py.File('./data/FC/bd1'+date_ext+'.h5', "w")  
+bd2 = h5py.File('./data/FC/bd2'+date_ext+'.h5', "w")
 
 # set a placeholder for future input
 x = tf.placeholder(tf.float32, shape = [None, 18])
@@ -75,11 +79,11 @@ counter = 0
 init_op = tf.global_variables_initializer()
 sess.run(init_op)
 
-f_test   = h5py.File('./data/NLdata.h5','r')['test_data'][:].T
-f_telab  = h5py.File('./data/NLdata.h5','r')['test_label'][:].T
-f_train  = h5py.File('./data/NLdata.h5','r')['train_data'][:].T
-f_trlab  = h5py.File('./data/NLdata.h5','r')['train_label'][:].T
-minmax   = h5py.File('./data/NLdata.h5','r')['minmax'][:]
+f_test   = h5py.File(src_path+'NLdata'+date_ext+'.h5','r')['test_data'][:].T
+f_telab  = h5py.File(src_path+'NLdata'+date_ext+'.h5','r')['test_label'][:].T
+f_train  = h5py.File(src_path+'NLdata'+date_ext+'.h5','r')['train_data'][:].T
+f_trlab  = h5py.File(src_path+'NLdata'+date_ext+'.h5','r')['train_label'][:].T
+minmax   = h5py.File(src_path+'NLdata'+date_ext+'.h5','r')['minmax'][:]
 
 idx = np.arange(f_train.shape[0])
 sf(idx)
@@ -127,7 +131,7 @@ bd1.close()
 bd2.close()
 
 
-f = h5py.File("model.h5", "w")
+f = h5py.File(src_path+'model'+date_ext+'.h5', "w")
 f.create_dataset('W1'  , data = W1.eval()) 
 f.create_dataset('W2'  , data = W2.eval()) 
 f.create_dataset('Wp1' , data = W_prime1.eval()) 
