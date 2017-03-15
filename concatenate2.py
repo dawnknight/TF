@@ -10,10 +10,14 @@ import cPickle,h5py
 import numpy as np
 
 
+#Ksrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_KData/'
+#Msrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_MData/'
+
 Ksrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_KData/'
 Msrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_MData/'
 
 dst_path = './Concatenate_Data/'
+date_ext = '_0306'
 
 #exe_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 exe_list = ['ex4']
@@ -27,12 +31,18 @@ for file_idx in exe_list:
     Mlist = glob.glob(os.path.join(Msrc_path, '*.pkl') )
     
     for Kinfile,Minfile in zip(Klist,Mlist):
+
+        
         if 'ex4' in Kinfile:
             
             K.append(Kinfile)
         if 'ex4' in Minfile: 
             
-            M.append(Minfile)    
+            M.append(Minfile)  
+            
+#    for KK,MM in zip(K,M):            
+#        print  KK.split('\\')[-1]   
+#        print  MM.split('\\')[-1] 
 
     for idx, (Kinfile,Minfile) in enumerate(zip(K,M)):
         
@@ -42,8 +52,8 @@ for file_idx in exe_list:
         len_stand = min(len(Kdata[0][0]),len(Mdata[0][0]))
         
         # concatenate all joints of one person
-        for i in [4,5,6,8,9,10]:#[0,1,2,3,4,5,6,8,9,10,20]:#
-            if i == 4:
+        for i in [0,1,2,3,4,5,6,8,9,10,20]:#[4,5,6,8,9,10]:#
+            if i == 0:
                 Kjoints_1_person = Kdata[i]
                 Mjoints_1_person = Mdata[i]
             else:
@@ -67,18 +77,18 @@ for file_idx in exe_list:
     else:
         print 'Data generating process is wrong'
     
-#    cPickle.dump(Kjoints_1_ex,file(dst_path + 'K_'+file_idx+'.pkl','wb'))
-#    cPickle.dump(Mjoints_1_ex,file(dst_path + 'M_'+file_idx+'.pkl','wb'))
-    cPickle.dump(Kjoints_1_ex,file(dst_path + 'limb_K_'+file_idx+'.pkl','wb'))
-    cPickle.dump(Mjoints_1_ex,file(dst_path + 'limb_M_'+file_idx+'.pkl','wb'))    
+    cPickle.dump(Kjoints_1_ex,file(dst_path + 'K_'+file_idx+date_ext+'.pkl','wb'))
+    cPickle.dump(Mjoints_1_ex,file(dst_path + 'M_'+file_idx+date_ext+'.pkl','wb'))
+    cPickle.dump(Kjoints_1_ex[12:30,:],file(dst_path + 'limb_K_'+file_idx+date_ext+'.pkl','wb'))
+    cPickle.dump(Mjoints_1_ex[12:30,:],file(dst_path + 'limb_M_'+file_idx+date_ext+'.pkl','wb'))    
     
 from random import shuffle as sf
 
 exeno = 'ex4'
-K = cPickle.load(file('./Concatenate_Data/limb_K_'+exeno+'.pkl','r'))
-M = cPickle.load(file('./Concatenate_Data/limb_M_'+exeno+'.pkl','r'))
-#K = cPickle.load(file('./Concatenate_Data/K_'+exeno+'.pkl','r'))
-#M = cPickle.load(file('./Concatenate_Data/M_'+exeno+'.pkl','r'))
+K = cPickle.load(file(dst_path+'limb_K_'+exeno+date_ext+'.pkl','r'))
+M = cPickle.load(file(dst_path+'limb_M_'+exeno+date_ext+'.pkl','r'))
+taroK = cPickle.load(file(dst_path+'K_'+exeno+date_ext+'.pkl','r'))
+taroM = cPickle.load(file(dst_path+'M_'+exeno+date_ext+'.pkl','r'))
 
 MAX = np.max([K.max(),M.max()])
 MIN = np.min([K.min(),M.min()])
@@ -122,7 +132,7 @@ NteL = NsM[:,:int(0.2*K.shape[1])]
 NtrL = NsM[:,int(0.2*K.shape[1]):]
 
 
-f = h5py.File("Ldata.h5", "w")
+f = h5py.File(dst_path+'Ldata'+date_ext+'.h5', "w")
 f.create_dataset('train_data' , data = trX) 
 f.create_dataset('train_label', data = trL) 
 f.create_dataset('test_data'  , data = teX) 
@@ -132,7 +142,7 @@ f.create_dataset('minmax'     , data =[MIN,MAX])
 f.close() 
 
 
-f = h5py.File("NLdata.h5", "w")
+f = h5py.File(dst_path+'NLdata'+date_ext+'.h5', "w")
 f.create_dataset('train_data' , data = NtrX) 
 f.create_dataset('train_label', data = NtrL) 
 f.create_dataset('test_data'  , data = NteX) 
@@ -143,7 +153,7 @@ f.close()
 
 #build K and M data 
     
-f = h5py.File('./data/limb_KandM_'+exeno+'.h5', "w")
+f = h5py.File(dst_path+'limb_KandM_'+exeno+date_ext+'.h5', "w")
 f.create_dataset('N_Kinect' , data = (K-MIN)/(MAX-MIN))
 f.create_dataset('N_Mcam'   , data = (M-MIN)/(MAX-MIN))
 f.create_dataset('Kinect'   , data = K)      
@@ -151,19 +161,19 @@ f.create_dataset('Mcam'     , data = M)
 f.close()   
 
   
-###build taro data
-#idx = np.array([0,1,2,3,10]) # joints id 0,1,2,3,20
-#bias = np.array([0,1,2])
-#
-#taro_idx = np.tile(idx,(3,1)).T.flatten()*3+np.tile(bias,len(idx))
-#
-#K_taro = K[taro_idx,:]
-#M_taro = M[taro_idx,:]   
-#
-#f = h5py.File('./data/KM_taro_'+exeno+'.h5', "w")
-#f.create_dataset('Ktaro' , data = K_taro)
-#f.create_dataset('Mtaro' , data = M_taro )  
-#
-#f.close()           
+##build taro data
+idx = np.array([0,1,2,3,10]) # joints id 0,1,2,3,20
+bias = np.array([0,1,2])
+
+taro_idx = np.tile(idx,(3,1)).T.flatten()*3+np.tile(bias,len(idx))
+
+K_taro = taroK[taro_idx,:]
+M_taro = taroM[taro_idx,:]   
+
+f = h5py.File(dst_path+'KM_taro_'+exeno+date_ext+'.h5', "w")
+f.create_dataset('Ktaro' , data = K_taro)
+f.create_dataset('Mtaro' , data = M_taro )  
+
+f.close()           
 
    
