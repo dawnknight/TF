@@ -39,6 +39,8 @@ for file_idx in exe_list:
         if 'ex4' in Minfile: 
             
             M.append(Minfile)  
+    print len(K)
+    print len(M)
             
 #    for KK,MM in zip(K,M):            
 #        print  KK.split('\\')[-1]   
@@ -131,7 +133,7 @@ NtrX = NsK[:,int(0.2*K.shape[1]):]
 NteL = NsM[:,:int(0.2*K.shape[1])]
 NtrL = NsM[:,int(0.2*K.shape[1]):]
 
-
+#limb data with training and testing set 
 f = h5py.File(dst_path+'Ldata'+date_ext+'.h5', "w")
 f.create_dataset('train_data' , data = trX) 
 f.create_dataset('train_label', data = trL) 
@@ -141,7 +143,7 @@ f.create_dataset('idx'        , data = idx)
 f.create_dataset('minmax'     , data =[MIN,MAX]) 
 f.close() 
 
-
+# Normalized limb data with training and testing set 
 f = h5py.File(dst_path+'NLdata'+date_ext+'.h5', "w")
 f.create_dataset('train_data' , data = NtrX) 
 f.create_dataset('train_label', data = NtrL) 
