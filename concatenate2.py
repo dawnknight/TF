@@ -21,10 +21,10 @@ date_ext = '_0306'
 
 #exe_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 exe_list = ['ex4']
-K = []
-M = []
+
 for file_idx in exe_list:
-    
+    K = []
+    M = []   
     
     Klist = glob.glob(os.path.join(Ksrc_path, '*.pkl') )
     
@@ -38,9 +38,10 @@ for file_idx in exe_list:
             K.append(Kinfile)
         if 'ex4' in Minfile: 
             
-            M.append(Minfile)  
-    print len(K)
-    print len(M)
+            M.append(Minfile) 
+#    print 'EX : ' + file_idx
+#    print 'K : '+repr(len(K))
+#    print 'M : '+repr(len(M))+'\n'
             
 #    for KK,MM in zip(K,M):            
 #        print  KK.split('\\')[-1]   
