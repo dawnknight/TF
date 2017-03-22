@@ -10,14 +10,14 @@ import cPickle,h5py
 import numpy as np
 
 
-#Ksrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_KData/'
+#Ksrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_KData_preprocess/'
 #Msrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_MData/'
 
-Ksrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_KData/'
-Msrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_MData/'
+Ksrc_path = 'F:/Kinect Project/Motion and Kinect unified/0322/Unified_KData/'
+Msrc_path = 'F:/Kinect Project/Motion and Kinect unified/0322/Unified_MData/'
 
 dst_path = './Concatenate_Data/'
-date_ext = '_0306'
+date_ext = '_0322_prep'
 
 #exe_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 exe_list = ['ex4']
@@ -29,6 +29,10 @@ for file_idx in exe_list:
     Klist = glob.glob(os.path.join(Ksrc_path, '*.pkl') )
     
     Mlist = glob.glob(os.path.join(Msrc_path, '*.pkl') )
+    if len(Klist)!=len(Mlist):
+        print '###############################'
+        print 'file number are not the same !!'
+        print '###############################'
     
     for Kinfile,Minfile in zip(Klist,Mlist):
 

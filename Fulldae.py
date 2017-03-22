@@ -12,19 +12,20 @@ import h5py
 from random import shuffle as sf
 
 src_path = './Concatenate_Data/'
-date_ext = '_0306'
+dst_path = './data/FC/'
+date_ext = '_0322'
 
 
 n_hidden1 = 64
 n_hidden2 = 18
 
-We1 = h5py.File('./data/FC/We1'+date_ext+'.h5', "w")  
-We2 = h5py.File('./data/FC/We2'+date_ext+'.h5', "w")
+We1 = h5py.File(dst_path + 'We1'+date_ext+'.h5', "w")  
+We2 = h5py.File(dst_path + 'We2'+date_ext+'.h5', "w")
 
-be1 = h5py.File('./data/FC/be1'+date_ext+'.h5', "w")  
-be2 = h5py.File('./data/FC/be2'+date_ext+'.h5', "w")
-bd1 = h5py.File('./data/FC/bd1'+date_ext+'.h5', "w")  
-bd2 = h5py.File('./data/FC/bd2'+date_ext+'.h5', "w")
+be1 = h5py.File(dst_path + 'be1'+date_ext+'.h5', "w")  
+be2 = h5py.File(dst_path + 'be2'+date_ext+'.h5', "w")
+bd1 = h5py.File(dst_path + 'bd1'+date_ext+'.h5', "w")  
+bd2 = h5py.File(dst_path + 'bd2'+date_ext+'.h5', "w")
 
 # set a placeholder for future input
 x = tf.placeholder(tf.float32, shape = [None, 18])
@@ -88,7 +89,7 @@ minmax   = h5py.File(src_path+'NLdata'+date_ext+'.h5','r')['minmax'][:]
 idx = np.arange(f_train.shape[0])
 sf(idx)
 
-for epoch in range(300000):
+for epoch in range(3000000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
@@ -131,7 +132,7 @@ bd1.close()
 bd2.close()
 
 
-f = h5py.File(src_path+'model'+date_ext+'.h5', "w")
+f = h5py.File(dst_path+'model'+date_ext+'.h5', "w")
 f.create_dataset('W1'  , data = W1.eval()) 
 f.create_dataset('W2'  , data = W2.eval()) 
 f.create_dataset('Wp1' , data = W_prime1.eval()) 
