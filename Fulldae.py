@@ -14,10 +14,10 @@ from random import shuffle as sf
 src_path = './Concatenate_Data/'
 dst_path = './data/FC/'
 date_ext = '_0322'
-
+test_ext = '_test'
 
 n_hidden1 = 64
-n_hidden2 = 18
+n_hidden2 = 3
 
 We1 = h5py.File(dst_path + 'We1'+date_ext+'.h5', "w")  
 We2 = h5py.File(dst_path + 'We2'+date_ext+'.h5', "w")
@@ -132,7 +132,7 @@ bd1.close()
 bd2.close()
 
 
-f = h5py.File(dst_path+'model'+date_ext+'.h5', "w")
+f = h5py.File(dst_path+'model'+date_ext+test_ext+'.h5', "w")
 f.create_dataset('W1'  , data = W1.eval()) 
 f.create_dataset('W2'  , data = W2.eval()) 
 f.create_dataset('Wp1' , data = W_prime1.eval()) 
