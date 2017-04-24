@@ -82,7 +82,7 @@ h_d_2 = tf.sigmoid(tf.matmul(h_d_1,W_prime2)+b_prime2)
 output = h_d_2
 
 
-cost = tf.reduce_mean(tf.pow((output - x)*Rel, 2))
+cost = tf.reduce_mean(tf.pow((output - x), 2)*Rel)
 optimizer = tf.train.AdamOptimizer(0.00001).minimize(cost)
 #optimizer = tf.train.GradientDescentOptimizer(0.001).minimize(cost)
 
@@ -166,6 +166,8 @@ f.create_dataset('bp2' , data = b_prime2.eval())
 f.create_dataset('minmax' , data = minmax) 
 f.close() 
 
+
+print(date_ext)
 
 
 

@@ -13,11 +13,11 @@ from random import shuffle as sf
 
 src_path = './Concatenate_Data/'
 dst_path = './data/FC/'
-date_ext = '_0322'
-test_ext = '_test'
+date_ext = '_0423'
+test_ext = ''
 
 n_hidden1 = 64
-n_hidden2 = 3
+n_hidden2 = 18
 
 We1 = h5py.File(dst_path + 'We1'+date_ext+'.h5', "w")  
 We2 = h5py.File(dst_path + 'We2'+date_ext+'.h5', "w")
@@ -146,7 +146,7 @@ f.close()
 
 
 
-
+print(date_ext)
 
 
 

@@ -10,14 +10,14 @@ import cPickle,h5py
 import numpy as np
 
 
-#Ksrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_KData_preprocess/'
-#Msrc_path = 'I:/Kinect Project/Motion and Kinect unified/Unified_MData/'
+Ksrc_path = 'I:/AllData_0327/unified data/Unified_KData/'
+Msrc_path = 'I:/AllData_0327/unified data/Unified_MData//'
 
-Ksrc_path = 'F:/Kinect Project/Motion and Kinect unified/0322/Unified_KData/'
-Msrc_path = 'F:/Kinect Project/Motion and Kinect unified/0322/Unified_MData/'
+#Ksrc_path = 'F:/Kinect Project/Motion and Kinect unified/0322/Unified_KData/'
+#Msrc_path = 'F:/Kinect Project/Motion and Kinect unified/0322/Unified_MData/'
 
 dst_path = './Concatenate_Data/'
-date_ext = '_0322_prep'
+date_ext = '_0423'
 
 #exe_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 exe_list = ['ex4']
