@@ -13,7 +13,7 @@ from random import shuffle as sf
 src_path = './Concatenate_Data/CNN/'
 dst_path = './data/CNN/'
 date_ext = '_CNN_0427'
-data_ext = ''
+data_ext = 'gpu_rel'
 
 joints_num  = 6             # number of joints
 ker_xsize   = 3             # convolution kernel size in x direction
