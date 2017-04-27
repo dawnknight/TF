@@ -10,11 +10,13 @@ from random import shuffle as sf
 
 
 src_path = 'I:/AllData_0327/unified data/'
-Kfolder = 'Unified_KData/'
-Mfolder = 'Unified_MData/'
+src_path = 'D:/Project/K_project/data/Motion and Kinect unified/'
+Kfolder  = 'Unified_KData/'
+Mfolder  = 'Unified_MData/'
+Rfolder  = 'reliability/'
 
 dst_path = './Concatenate_Data/CNN/'
-date_ext = '_0425'
+date_ext = '_CNN_0427'
 
 
 batchsize = 30 # sample number per group
@@ -24,45 +26,59 @@ index = 0
 
 LEN = []
 Ksubtensor = {}
-Msubtensor = {}    
-for kinfile,minfile in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl')),\
-                           glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl'))):
+Msubtensor = {} 
+Rsubtensor = {}    
+for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex1.pkl')),\
+                                    glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl')),\
+                                    glob.glob(os.path.join(src_path+Rfolder,'*Rel_ex4.pkl'))):
     print('group_'+str(index+1)+'......')
     print  kinfile
     print  minfile  
+    print  rinfile
     print('==================================\n\n\n')
 
     kdata = cPickle.load(file(kinfile,'r'))
     mdata = cPickle.load(file(minfile,'r'))
+    rdata = cPickle.load(file(rinfile,'r'))
     length = min(kdata[0].shape[1],mdata[0].shape[1])
     LEN.append(length-batchsize+1) 
     Ksubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
     Msubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
+    Rsubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])  
 
     for i in kdata.keys():#[4,5,6,8,9,10]:
         if i == 0:
             Kjoints = kdata[i]
             Mjoints = mdata[i]
+            Rjoints = np.vstack([rdata[i],rdata[i],rdata[i]])
         else:
             Kjoints = np.vstack([Kjoints,kdata[i]])
             Mjoints = np.vstack([Mjoints,mdata[i]])
+            Rjoints = np.vstack([Rjoints,rdata[i],rdata[i],rdata[i]])
+            
  
     for idx,i in enumerate(xrange(batchsize-1,length)):
         
             Ksubtensor[index][:,:,idx] = Kjoints[:,idx:batchsize+idx]
             Msubtensor[index][:,:,idx] = Mjoints[:,idx:batchsize+idx]
+            Rsubtensor[index][:,:,idx] = Rjoints[:,idx:batchsize+idx]
+
     index += 1
     
 Ktensor = np.zeros([jnum,batchsize,sum(LEN)])
 Mtensor = np.zeros([jnum,batchsize,sum(LEN)])
+Rtensor = np.zeros([jnum,batchsize,sum(LEN)])
 Klimbtensor = np.zeros([18,batchsize,sum(LEN)])
 Mlimbtensor = np.zeros([18,batchsize,sum(LEN)])
+Rlimbtensor = np.zeros([18,batchsize,sum(LEN)])
+
 start = 0
 end   = 0
 for i in xrange(index-1):
         end += LEN[i]
         Ktensor[:,:,start:end] = Ksubtensor[i]
         Mtensor[:,:,start:end] = Msubtensor[i]
+        Rtensor[:,:,start:end] = Rsubtensor[i]
 #        Klimbtensor[:,:,start:end] = Ksubtensor[i][12:30,:,:]
 #        Mlimbtensor[:,:,start:end] = Msubtensor[i][12:30,:,:]
         start = end
@@ -76,6 +92,7 @@ sf(idx)
 
 K = Ktensor[12:30,:,:]
 M = Mtensor[12:30,:,:]
+R = Rtensor[12:30,:,:]
 
 MAX = np.max([K.max(),M.max()])
 MIN = np.min([K.min(),M.min()])
@@ -87,27 +104,31 @@ NM = (M-MIN)/(MAX-MIN)
 #shuffle
 sNK = NK[:,:,idx]
 sNM = NK[:,:,idx]
+sR  =  R[:,:,idx]
 
 teX   = sNK[:,:,:int(0.2*sum(LEN))]
 teL   = sNM[:,:,:int(0.2*sum(LEN))]
+teR   =  sR[:,:,:int(0.2*sum(LEN))]            
 trX   = sNK[:,:,int(0.2*sum(LEN)):]
 trL   = sNM[:,:,int(0.2*sum(LEN)):] 
-           
+trR   =  sR[:,:,int(0.2*sum(LEN)):]            
            
 
 f = h5py.File(dst_path+'NLdata'+date_ext+'.h5')
-f.create_dataset('train_data' , data = trX) 
-f.create_dataset('train_label', data = trL) 
-f.create_dataset('test_data'  , data = teX) 
-f.create_dataset('test_label' , data = teL) 
-f.create_dataset('idx'        , data = idx) 
-f.create_dataset('minmax'     , data =[MIN,MAX]) 
+f.create_dataset('train_data'    , data = trX) 
+f.create_dataset('train_label'   , data = trL) 
+f.create_dataset('train_data_rel', data = trR)
+f.create_dataset('test_data'     , data = teX) 
+f.create_dataset('test_label'    , data = teL) 
+f.create_dataset('test_data_rel' , data = teR)
+f.create_dataset('idx'           , data = idx) 
+f.create_dataset('minmax'        , data =[MIN,MAX]) 
 f.close()             
         
 f = h5py.File(dst_path+'batch'+date_ext+'.h5', "w")
 f.create_dataset('Kdata' , data = Ktensor)
 f.create_dataset('Mdata' , data = Mtensor)  
-
+f.create_dataset('Rdata' , data = Rtensor)
 f.close()              
             
 
