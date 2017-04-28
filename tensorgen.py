@@ -17,7 +17,7 @@ Rfolder  = 'reliability/'
 
 dst_path = './Concatenate_Data/CNN/'
 date_ext = '_CNN_0427'
-
+exeno =  'ex4'
 
 batchsize = 30 # sample number per group
 jnum = 33      # joint number *3 (xyz) per sample 
@@ -28,7 +28,7 @@ LEN = []
 Ksubtensor = {}
 Msubtensor = {} 
 Rsubtensor = {}    
-for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex1.pkl')),\
+for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl')),\
                                     glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl')),\
                                     glob.glob(os.path.join(src_path+Rfolder,'*Rel_ex4.pkl'))):
     print('group_'+str(index+1)+'......')
@@ -40,6 +40,7 @@ for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex
     kdata = cPickle.load(file(kinfile,'r'))
     mdata = cPickle.load(file(minfile,'r'))
     rdata = cPickle.load(file(rinfile,'r'))
+    
     length = min(kdata[0].shape[1],mdata[0].shape[1])
     LEN.append(length-batchsize+1) 
     Ksubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
@@ -133,7 +134,14 @@ f.close()
             
 
  
-            
+f = h5py.File(dst_path+'limb_KandM_'+exeno+date_ext+'.h5', "w")
+f.create_dataset('N_Kinect' , data = (K-MIN)/(MAX-MIN))
+f.create_dataset('N_Mcam'   , data = (M-MIN)/(MAX-MIN))
+f.create_dataset('Kinect'   , data = K)      
+f.create_dataset('Mcam'     , data = M) 
+      
+f.close()   
+        
             
             
             

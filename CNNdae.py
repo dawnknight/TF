@@ -13,7 +13,7 @@ from random import shuffle as sf
 src_path = './Concatenate_Data/CNN/'
 dst_path = './data/CNN/'
 date_ext = '_CNN_0427'
-data_ext = 'gpu_rel'
+data_ext = '_M2K_rel'
 
 joints_num  = 6             # number of joints
 ker_xsize   = 3             # convolution kernel size in x direction
@@ -41,6 +41,8 @@ be1 = h5py.File(dst_path + 'be1'+date_ext+data_ext+'.h5', "w")
 be2 = h5py.File(dst_path + 'be2'+date_ext+data_ext+'.h5', "w")
 bd1 = h5py.File(dst_path + 'bd1'+date_ext+data_ext+'.h5', "w")  
 bd2 = h5py.File(dst_path + 'bd2'+date_ext+data_ext+'.h5', "w")
+
+
 
 # set a placeholder for future input
 x = tf.placeholder(tf.float32, shape = [None, group_size,joints_num*3 ])
@@ -113,7 +115,7 @@ sf(idx)
 
 
 
-for epoch in range(100000):
+for epoch in range(1000000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
@@ -147,9 +149,10 @@ for epoch in range(100000):
     
     
         
-    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise, rel : batch_rel})
-
-print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test , rel : f_teRel }))
+#    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise, rel : batch_rel})
+    optimizer.run(feed_dict={x_noise:batch_raw, x: batch_noise, rel : batch_rel})
+#print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test , rel : f_teRel }))
+print(sess.run(cost, feed_dict={x_noise: f_telab, x: f_test , rel : f_teRel }))
 
 #aaa = sess.run(h_d_conv1,feed_dict={x:batch_raw})
 #Ke1 = sess.run(h_e_conv1, feed_dict={x: batch_raw, x_noise: batch_noise})
@@ -168,6 +171,15 @@ be2.close()
 bd1.close()
 bd2.close()
 #
+
+joints_num  = 6             # number of joints
+ker_xsize   = 3             # convolution kernel size in x direction
+ker_ysize   = joints_num*3  # convolution kernel size in y direction
+group_size  = 30            # sample number per group
+batch_size  = 16            # number of group per batch
+conv_ker_L1 = 4            # convolution kernel size for hidden layer 1
+conv_ker_L2 = 8            # convolution kernel size for hidden layer 2
+
 f = h5py.File(dst_path+'model'+date_ext+data_ext+'.h5', "w")
 f.create_dataset('We1'  , data = W_e_conv1.eval()) 
 f.create_dataset('We2'  , data = W_e_conv2.eval()) 
@@ -176,11 +188,12 @@ f.create_dataset('Wd2'  , data = W_d_conv2.eval())
 f.create_dataset('be1'  , data = b_e_conv1.eval()) 
 f.create_dataset('be2'  , data = b_e_conv2.eval()) 
 f.create_dataset('bd1'  , data = b_d_conv1.eval()) 
-f.create_dataset('bd2'  , data = b_d_conv2.eval()) 
+f.create_dataset('bd2'  , data = b_d_conv2.eval())
+f.create_dataset('parm'  , data = [joints_num,group_size,batch_size,conv_ker_L1,conv_ker_L2])
 f.create_dataset('minmax' , data = minmax) 
 f.close() 
 
 
-print(date_ext)
+print(date_ext+'_'+data_ext)
 
 
