@@ -87,7 +87,7 @@ h_d_conv2 = tf.nn.relu(tf.add(deconv2d(h_d_conv1, W_d_conv2,output_shape_d_conv2
 
 
 x_reconstruct = h_d_conv2[:,:,:,0]
-print("reconstruct layer shape : %s" % x_reconstruct.get_shape())
+print("reconstruct layer shape : %s" % h_d_conv2.get_shape())
 
 cost = tf.reduce_mean(tf.pow(x_reconstruct - x, 2)*rel)
 optimizer = tf.train.AdamOptimizer(0.0001).minimize(cost)

@@ -30,7 +30,7 @@ data_ext = 'M2K_rel'
 NK = h5py.File(src_path + 'limb_KandM_ex4'+date_ext+'.h5','r')['N_Kinect'][:]
 K  = h5py.File(src_path + 'limb_KandM_ex4'+date_ext+'.h5','r')['Kinect'][:]
 M  = h5py.File(src_path + 'limb_KandM_ex4'+date_ext+'.h5','r')['Mcam'][:]   
-[MIN,MAX]  = h5py.File(src_path + 'model'+date_ext+'.h5','r')['minmax'][:]  
+[MIN,MAX]  = h5py.File(src_path + 'NLdata'+date_ext+'.h5','r')['minmax'][:]  
 
 def Anichk(idx =1,start = 200, taro = False , Type = 'CNN'): 
     
@@ -53,43 +53,45 @@ def Anichk(idx =1,start = 200, taro = False , Type = 'CNN'):
         bd2   = h5py.File('./data/CNN/bd2'+date_ext+data_ext+'.h5','r')['b_d_conv2_'+str(idx)][:]
         [joints_num,group_size,batch_size,conv_ker_L1,conv_ker_L2] = h5py.File('./data/CNN/model'+date_ext+data_ext+'.h5','r')['parm'][:]
     
-        x = tf.placeholder(tf.float32, shape = [None, group_size,joints_num*3])
-        x_origin = tf.reshape(x, [-1, group_size,joints_num*3, 1])
+        x = tf.placeholder(tf.float32, shape = [None, 30,18])
+        x_origin = tf.reshape(x, [-1, 30,18, 1])
         he1 = tf.nn.relu(tf.add(conv2d(x_origin, We1), be1))
         he2 = tf.nn.relu(tf.add(conv2d(he1, We2), be2))
         
-        output_shape_d1 = tf.pack([batch_size, group_size, joints_num*3, conv_ker_L1])
-        output_shape_d2 = tf.pack([batch_size, group_size, joints_num*3, conv_ker_L2])
+        output_shape_d1 = tf.pack([16, 30, 18, 4])
+        output_shape_d2 = tf.pack([16, 30, 18, 8])
         hd1 = tf.nn.relu(deconv2d(he2, Wd1,output_shape_d1)+bd1)
         hd2 = tf.nn.relu(deconv2d(hd1, Wd2,output_shape_d2)+bd2)
         
         sess = tf.InteractiveSession()
-        batch_size = 16
-        loop = 2
-        #    start = 200
+#        batch_size = 16
+        loop = 5
+
         
-        tmp = np.ones([18,90])
+        tmp = np.ones([18,loop*batch_size-1+group_size])
         
         
         
-        for i in range(2):
-            batch_raw = np.zeros([16,30,18])
-            for j in range(batch_size) :
-                batch_raw[j,:,:] = NK[:,start+j+i*(batch_size-1):start+j+i*(batch_size-1)+30].T
-                        
+        for i in range(loop):
+            batch_raw = np.zeros([batch_size,group_size,18])
+#            for j in range(batch_size) :
+#                batch_raw[j,:,:] = NK[:,:,start+j+i*group_size:start+j+(i+1)*group_size].T
+            batch_raw[:] = NK[:,:,start+i*batch_size:start+(i+1)*batch_size].T        
                    
         #    batch_raw = NK[:,:,i*batch_size:(i+1)*batch_size].T
             a = sess.run(hd2,feed_dict={x:batch_raw}).T[0,:,:,:] 
                       
             if i == 0:
-                tmp[:,:30] = a[:,:,0]
-                for j in range(1,16):
-                    tmp[:,29+j] = a[:,:,j][:,-1]
+                tmp[:,:group_size] = a[:,:,0]
+                for j in range(1,batch_size):
+                    tmp[:,(group_size-1)+j] = a[:,:,j][:,-1]
             else:
-                tmp[:,45:75] = a[:,:,0]
-                for j in range(1,16):
-                    tmp[:,74+j] = a[:,:,j][:,-1]
-
+#                tmp[:,45:75] = a[:,:,0]
+#                
+#                for j in range(1,16):
+#                    tmp[:,74+j] = a[:,:,j][:,-1]
+                for j in range(batch_size):
+                    tmp[:,group_size+i*batch_size-1+j] = a[:,:,j][:,-1]
 
 
     elif Type == 'FC': #fully connected
