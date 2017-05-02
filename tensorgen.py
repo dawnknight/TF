@@ -9,14 +9,14 @@ import numpy as np
 from random import shuffle as sf
 
 
-src_path = 'I:/AllData_0327/unified data/'
+#src_path = 'I:/AllData_0327/unified data/'
 src_path = 'D:/Project/K_project/data/Motion and Kinect unified/'
 Kfolder  = 'Unified_KData/'
 Mfolder  = 'Unified_MData/'
 Rfolder  = 'reliability/'
 
 dst_path = './Concatenate_Data/CNN/'
-date_ext = '_CNN_0427'
+date_ext = '_CNN_0502'
 exeno =  'ex4'
 
 batchsize = 30 # sample number per group

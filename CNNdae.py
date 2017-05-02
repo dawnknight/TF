@@ -65,7 +65,7 @@ W_d_init2 = tf.truncated_normal([ker_xsize, ker_ysize,  1,conv_ker_L1], mean=0.0
 W_e_conv1 = tf.Variable(W_e_init1 , name = 'W_e_1')
 b_e_conv1 = tf.Variable(tf.constant(0.1,shape = [conv_ker_L1]), name='b_e_1')
 W_e_conv2 = tf.Variable(W_e_init2 , name = 'W_e_2')
-b_e_conv2 = tf.Variable(tf.constant(0.1,shape = [conv_ker_L2]), name='b_e_2')
+b_e_conv2 = tf.Variable(tf.constant(0.1,shape = [1]), name='b_e_2')
 
 
 #decoder initailize
