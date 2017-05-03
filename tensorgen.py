@@ -58,7 +58,7 @@ for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex
             Rjoints = np.vstack([Rjoints,rdata[i],rdata[i],rdata[i]])
             
  
-    for idx in xrange(group_size-1,length):
+    for idx,_ in enumerate(xrange(group_size-1,length)):
         
             Ksubtensor[index][:,:,idx] = Kjoints[:,idx:group_size+idx]
             Msubtensor[index][:,:,idx] = Mjoints[:,idx:group_size+idx]
