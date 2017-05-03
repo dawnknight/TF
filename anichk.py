@@ -53,27 +53,26 @@ def Anichk(idx =1,start = 200, taro = False , Type = 'CNN'):
         bd2   = h5py.File('./data/CNN/bd2'+date_ext+data_ext+'.h5','r')['b_d_conv2_'+str(idx)][:]
         [joints_num,group_size,batch_size,conv_ker_L1,conv_ker_L2] = h5py.File('./data/CNN/model'+date_ext+data_ext+'.h5','r')['parm'][:]
     
-        x = tf.placeholder(tf.float32, shape = [None, 30,18])
-        x_origin = tf.reshape(x, [-1, 30,18, 1])
+        x = tf.placeholder(tf.float32, shape = [None, group_size,joints_num*3])
+        x_origin = tf.reshape(x, [-1, group_size,joints_num*3, 1])
         he1 = tf.nn.relu(tf.add(conv2d(x_origin, We1), be1))
         he2 = tf.nn.relu(tf.add(conv2d(he1, We2), be2))
         
-        output_shape_d1 = tf.pack([16, 30, 18, 4])
-        output_shape_d2 = tf.pack([16, 30, 18, 8])
+        output_shape_d1 = tf.pack([batch_size, group_size, joints_num*3, conv_ker_L1])
+        output_shape_d2 = tf.pack([batch_size, group_size, joints_num*3, 1])
         hd1 = tf.nn.relu(deconv2d(he2, Wd1,output_shape_d1)+bd1)
         hd2 = tf.nn.relu(deconv2d(hd1, Wd2,output_shape_d2)+bd2)
         
         sess = tf.InteractiveSession()
-#        batch_size = 16
         loop = 5
 
         
-        tmp = np.ones([18,loop*batch_size-1+group_size])
+        tmp = np.ones([joints_num*3,loop*batch_size-1+group_size])
         
         
         
         for i in range(loop):
-            batch_raw = np.zeros([batch_size,group_size,18])
+            batch_raw = np.zeros([batch_size,group_size,joints_num*3])
 #            for j in range(batch_size) :
 #                batch_raw[j,:,:] = NK[:,:,start+j+i*group_size:start+j+(i+1)*group_size].T
             batch_raw[:] = NK[:,:,start+i*batch_size:start+(i+1)*batch_size].T        

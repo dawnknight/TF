@@ -115,7 +115,7 @@ sf(idx)
 
 
 
-for epoch in range(1000000):
+for epoch in range(100000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
@@ -172,13 +172,13 @@ bd1.close()
 bd2.close()
 #
 
-joints_num  = 6             # number of joints
-ker_xsize   = 3             # convolution kernel size in x direction
-ker_ysize   = joints_num*3  # convolution kernel size in y direction
-group_size  = 30            # sample number per group
-batch_size  = 16            # number of group per batch
-conv_ker_L1 = 4            # convolution kernel size for hidden layer 1
-conv_ker_L2 = 8            # convolution kernel size for hidden layer 2
+#joints_num  = 6             # number of joints
+#ker_xsize   = 3             # convolution kernel size in x direction
+#ker_ysize   = joints_num*3  # convolution kernel size in y direction
+#group_size  = 30            # sample number per group
+#batch_size  = 16            # number of group per batch
+#conv_ker_L1 = 4            # convolution kernel size for hidden layer 1
+#conv_ker_L2 = 8            # convolution kernel size for hidden layer 2
 
 f = h5py.File(dst_path+'model'+date_ext+data_ext+'.h5', "w")
 f.create_dataset('We1'  , data = W_e_conv1.eval()) 

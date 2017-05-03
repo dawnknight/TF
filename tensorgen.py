@@ -19,8 +19,8 @@ dst_path = './Concatenate_Data/CNN/'
 date_ext = '_CNN_0502'
 exeno =  'ex4'
 
-batchsize = 30 # sample number per group
-jnum = 33      # joint number *3 (xyz) per sample 
+group_size = 30 # sample number per group
+jnum = 11      # joint number *3 (xyz) per sample 
 index = 0
 
 
@@ -42,10 +42,10 @@ for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex
     rdata = cPickle.load(file(rinfile,'r'))
     
     length = min(kdata[0].shape[1],mdata[0].shape[1])
-    LEN.append(length-batchsize+1) 
-    Ksubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
-    Msubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])
-    Rsubtensor[index] = np.zeros([jnum,batchsize,length-batchsize+1])  
+    LEN.append(length-group_size+1) 
+    Ksubtensor[index] = np.zeros([jnum*3,group_size,length-group_size+1])
+    Msubtensor[index] = np.zeros([jnum*3,group_size,length-group_size+1])
+    Rsubtensor[index] = np.zeros([jnum*3,group_size,length-group_size+1])  
 
     for i in kdata.keys():#[4,5,6,8,9,10]:
         if i == 0:
@@ -58,20 +58,20 @@ for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex
             Rjoints = np.vstack([Rjoints,rdata[i],rdata[i],rdata[i]])
             
  
-    for idx,i in enumerate(xrange(batchsize-1,length)):
+    for idx in xrange(group_size-1,length):
         
-            Ksubtensor[index][:,:,idx] = Kjoints[:,idx:batchsize+idx]
-            Msubtensor[index][:,:,idx] = Mjoints[:,idx:batchsize+idx]
-            Rsubtensor[index][:,:,idx] = Rjoints[:,idx:batchsize+idx]
+            Ksubtensor[index][:,:,idx] = Kjoints[:,idx:group_size+idx]
+            Msubtensor[index][:,:,idx] = Mjoints[:,idx:group_size+idx]
+            Rsubtensor[index][:,:,idx] = Rjoints[:,idx:group_size+idx]
 
     index += 1
     
-Ktensor = np.zeros([jnum,batchsize,sum(LEN)])
-Mtensor = np.zeros([jnum,batchsize,sum(LEN)])
-Rtensor = np.zeros([jnum,batchsize,sum(LEN)])
-Klimbtensor = np.zeros([18,batchsize,sum(LEN)])
-Mlimbtensor = np.zeros([18,batchsize,sum(LEN)])
-Rlimbtensor = np.zeros([18,batchsize,sum(LEN)])
+Ktensor = np.zeros([jnum*3,group_size,sum(LEN)])
+Mtensor = np.zeros([jnum*3,group_size,sum(LEN)])
+Rtensor = np.zeros([jnum*3,group_size,sum(LEN)])
+Klimbtensor = np.zeros([18,group_size,sum(LEN)])
+Mlimbtensor = np.zeros([18,group_size,sum(LEN)])
+Rlimbtensor = np.zeros([18,group_size,sum(LEN)])
 
 start = 0
 end   = 0
