@@ -11,12 +11,12 @@ import numpy as np
 from random import shuffle as sf
 
 
-Ksrc_path = './data/Motion and Kinect unified/Unified_KData/'
-Msrc_path = './data/Motion and Kinect unified/Unified_MData/'
-Rsrc_path = './data/Motion and Kinect unified/reliability/'
+Ksrc_path = 'D:/Project/K_project/data/Motion and Kinect unified/Unified_KData/'
+Msrc_path = 'D:/Project/K_project/data/Motion and Kinect unified/Unified_MData/'
+Rsrc_path = 'D:/Project/K_project/data/Motion and Kinect unified/reliability/'
 
 dst_path = './Concatenate_Data/'
-date_ext = '_REL_b'
+date_ext = '_REL0504'
 
 #exe_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 exe_list = ['ex4']
@@ -130,7 +130,7 @@ sf(idx)
 
 #normalized to 0 to 1
 NK = (K-MIN)/(MAX-MIN)
-NK = np.insert(NK,ins_idx,R,0)
+#NK = np.insert(NK,ins_idx,R,0)  # add R in training set
 NM = (M-MIN)/(MAX-MIN)
 
 tmpR = R
@@ -140,7 +140,7 @@ tmpR   = np.insert(tmpR,np.array([0,2,4,6,8,10]),R,0)
 
 sNK = NK[:,idx]
 sNM = NM[:,idx]
-sR  = (tmpR[:,idx]>0.75)*1
+sR  = tmpR[:,idx]
 
 NteX = sNK[:,:int(0.2*K.shape[1])]
 teR  = sR[:,:int(0.2*K.shape[1])]          

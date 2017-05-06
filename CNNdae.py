@@ -12,7 +12,7 @@ from random import shuffle as sf
 
 src_path = './Concatenate_Data/CNN/'
 dst_path = './data/CNN/'
-date_ext = '_CNN_0427'
+date_ext = '_CNN_0504'
 data_ext = '_K2M_rel'
 
 joints_num  = 6             # number of joints
