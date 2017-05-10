@@ -122,8 +122,8 @@ for epoch in range(100000):
         idx = np.arange(f_train.shape[0])
         sf(idx)
         
-    batch_raw   = f_trlab[idx[(counter)*batch_size:(counter+1)*batch_size],:,:]
-    batch_noise = f_train[idx[(counter)*batch_size:(counter+1)*batch_size],:,:]
+    batch_raw   = f_trlab[idx[(counter)*batch_size:(counter+1)*batch_size],:,:] # mocam data
+    batch_noise = f_train[idx[(counter)*batch_size:(counter+1)*batch_size],:,:] # kinect data
     batch_rel   = f_trRel[idx[(counter)*batch_size:(counter+1)*batch_size],:,:]                         
 
     if epoch%1000 == 0: 
@@ -149,10 +149,11 @@ for epoch in range(100000):
     
     
         
-#    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise, rel : batch_rel})
-    optimizer.run(feed_dict={x_noise:batch_raw, x: batch_noise, rel : batch_rel})
-#print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test , rel : f_teRel }))
-print(sess.run(cost, feed_dict={x_noise: f_telab, x: f_test , rel : f_teRel }))
+    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise, rel : batch_rel}) # K2M    
+print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test , rel : f_teRel }))   # K2M 
+
+#    optimizer.run(feed_dict={x_noise:batch_raw, x: batch_noise, rel : batch_rel})  # M2K 
+#print(sess.run(cost, feed_dict={x_noise: f_telab, x: f_test , rel : f_teRel }))    # M2K 
 
 #aaa = sess.run(h_d_conv1,feed_dict={x:batch_raw})
 #Ke1 = sess.run(h_e_conv1, feed_dict={x: batch_raw, x_noise: batch_noise})
