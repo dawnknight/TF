@@ -15,7 +15,7 @@ from random import shuffle as sf
 
 src_path = './Concatenate_Data/'
 dst_path = './data/FC/'
-date_ext = '_REL_b'
+date_ext = '_REL0504'
 data_ext = ''
 
 
@@ -24,7 +24,7 @@ n_hidden1    = 64
 n_hidden2    = 18
 x_size       = 18
 Rel_size     = 18
-x_noise_size = 24
+x_noise_size = 18
 
 
 We1 = h5py.File(dst_path + 'We1'+date_ext+data_ext+'.h5', "w")  
@@ -82,7 +82,7 @@ h_d_2 = tf.sigmoid(tf.matmul(h_d_1,W_prime2)+b_prime2)
 output = h_d_2
 
 
-cost = tf.reduce_mean(tf.pow((output - x), 2)*Rel)
+cost = tf.reduce_mean(tf.pow((output - x), 2))
 optimizer = tf.train.AdamOptimizer(0.00001).minimize(cost)
 #optimizer = tf.train.GradientDescentOptimizer(0.001).minimize(cost)
 
