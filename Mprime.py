@@ -5,9 +5,9 @@ Created on Sun May 21 14:55:47 2017
 @author: Dawnknight
 """
 
-import os , glob , cPickle , h5py
+import os , glob  , h5py
+import _Pickle as cPickle
 import numpy as np
-from random import shuffle as sf
 import tensorflow as tf
 
 #src_path = 'I:/AllData_0327/unified data/'
