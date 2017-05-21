@@ -115,7 +115,7 @@ sf(idx)
 
 
 
-for epoch in range(100000):
+for epoch in range(1000000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0
