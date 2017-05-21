@@ -6,7 +6,7 @@ Created on Sun May 21 14:55:47 2017
 """
 
 import os , glob  , h5py
-import _Pickle as cPickle
+import _pickle as cPickle
 import numpy as np
 import tensorflow as tf
 
