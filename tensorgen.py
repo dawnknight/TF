@@ -16,7 +16,7 @@ Mfolder  = 'Unified_MData/'
 Rfolder  = 'reliability/'
 
 dst_path = './Concatenate_Data/CNN/'
-date_ext = '_CNN_0504'
+date_ext = '_CNN_0521'
 exeno =  'ex4'
 
 group_size = 30 # sample number per group
