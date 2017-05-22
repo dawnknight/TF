@@ -10,8 +10,10 @@ import _pickle as cPickle
 import numpy as np
 import tensorflow as tf
 
-#src_path = 'I:/AllData_0327/unified data/'
-src_path = 'D:/Project/K_project/data/Motion and Kinect unified array/'
+import pdb
+
+src_path = 'I:/AllData_0327/unified data array/'
+#src_path = 'D:/Project/K_project/data/Motion and Kinect unified array/'
 Kfolder  = 'Unified_KData/'
 Mfolder  = 'Unified_MData/'
 
@@ -74,17 +76,17 @@ sess = tf.InteractiveSession()
 
 
 
-for idx,(kinfile,minfile)  in enumerate(zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl'))[0],\
-                                            glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl')))[0]):
+for kinfile,minfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl')),\
+                             glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl'))):
     
-    print('group_'+str(idx+1)+'......')
+
     print(kinfile)
     print(minfile)  
     print('==================================\n\n\n')    
-    kdata = cPickle.load(file(kinfile,'r'))
-    mdata = cPickle.load(file(minfile,'r'))
+    kdata = cPickle.load(open(kinfile,'rb'),encoding = 'latin1')
+    mdata = cPickle.load(open(minfile,'rb'),encoding = 'latin1')
     
-    Len = min(kdata[0].shape[1],mdata[0].shape[1])
+    Len = min(kdata.shape[1],mdata.shape[1])
     
     
     apdK = (np.hstack([np.tile(kdata[:,0],(apdlen,1)).T,kdata])-MIN)/(MAX-MIN)
@@ -92,9 +94,9 @@ for idx,(kinfile,minfile)  in enumerate(zip(glob.glob(os.path.join(src_path+Kfol
     
     for i in [0]:#range(Len):
         
-        rawdata = apdK[:,i:i+group_size].T
+        rawdata = apdK[12:30,i:i+group_size].T.reshape((-1,30,18))
         a = sess.run(hd2,feed_dict={x:rawdata}).T
-    
+    pdb.set_trace()    
     
     
     
