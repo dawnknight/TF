@@ -18,10 +18,9 @@ Kfolder  = 'Unified_KData/'
 Mfolder  = 'Unified_MData/'
 
 
-dst_path = './Concatenate_Data/CNN/'
+dst_path = 'I:/AllData_0327/unified Mprime/'
 
 group_size = 30 # sample number per group
-jnum = 11      # joint number *3 (xyz) per sample 
 index = 0
 
 apdlen = group_size-1 #append length
@@ -58,22 +57,12 @@ x_origin = tf.reshape(x, [-1, group_size,joints_num*3, 1])
 he1 = tf.nn.relu(tf.add(conv2d(x_origin, We1), be1))
 he2 = tf.nn.relu(tf.add(conv2d(he1, We2), be2))
 
-output_shape_d1 = tf.pack([batch_size, group_size, joints_num*3, conv_ker_L1])
-output_shape_d2 = tf.pack([batch_size, group_size, joints_num*3, 1])
+output_shape_d1 = tf.pack([1, group_size, joints_num*3, conv_ker_L1])
+output_shape_d2 = tf.pack([1, group_size, joints_num*3, 1])
 hd1 = tf.nn.relu(deconv2d(he2, Wd1,output_shape_d1)+bd1)
 hd2 = tf.nn.relu(deconv2d(hd1, Wd2,output_shape_d2)+bd2)
 
 sess = tf.InteractiveSession()
-
-
-
-
-
-
-
-
-
-
 
 
 for kinfile,minfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl')),\
@@ -88,15 +77,24 @@ for kinfile,minfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl'))
     
     Len = min(kdata.shape[1],mdata.shape[1])
     
+    Mprime = np.zeros((joints_num*3,Len))
     
-    apdK = (np.hstack([np.tile(kdata[:,0],(apdlen,1)).T,kdata])-MIN)/(MAX-MIN)
+    fname  = dst_path+kinfile.split('\\')[-1][:-3]+'h5'
+    apdK = (np.hstack([np.tile(kdata[:,0],(apdlen,1)).T,kdata])-MIN)/(MAX-MIN)  # repeat first col for another apdlen times (in this case 30-1 = 29)
 #    apdM = np.hstack([np.tile(mdata[:,0],(apdlen,1)).T,mdata])
     
-    for i in [0]:#range(Len):
+    for i in range(Len):
         
         rawdata = apdK[12:30,i:i+group_size].T.reshape((-1,30,18))
-        a = sess.run(hd2,feed_dict={x:rawdata}).T
-    pdb.set_trace()    
+
+        a = sess.run(hd2,feed_dict={x:rawdata}).T[0,:,:,0]   # 18*30 array
+        
+        Mprime[:,i] = a[:,-1]
+
+#    cPickle.dump(Mprime*(MAX-MIN)+MIN,file(fname,'wb'))
+    f = h5py.File(fname, "w")
+    f.create_dataset('data', data = Mprime*(MAX-MIN)+MIN)
+    f.close()
     
     
     
