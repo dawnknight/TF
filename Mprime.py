@@ -12,13 +12,13 @@ import tensorflow as tf
 
 import pdb
 
-src_path = 'I:/AllData_0327/unified data array/'
-#src_path = 'D:/Project/K_project/data/Motion and Kinect unified array/'
+#src_path = 'I:/AllData_0327/unified data array/'
+src_path = 'D:/Project/K_project/data/Motion and Kinect unified array/'
 Kfolder  = 'Unified_KData/'
 Mfolder  = 'Unified_MData/'
 
 
-dst_path = 'I:/AllData_0327/unified Mprime/'
+dst_path = 'D:/Project/K_project/data/unified Mprime/'
 
 group_size = 30 # sample number per group
 index = 0

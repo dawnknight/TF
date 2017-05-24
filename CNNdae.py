@@ -12,8 +12,8 @@ from random import shuffle as sf
 
 src_path = './Concatenate_Data/CNN/'
 dst_path = './data/CNN/'
-date_ext = '_CNN_0521'
-data_ext = '_K2M_rel'
+date_ext = '_CNN_gpr_0524'
+data_ext = '_Mgpr2K_rel'
 
 joints_num  = 6             # number of joints
 ker_xsize   = 3             # convolution kernel size in x direction
@@ -149,11 +149,11 @@ for epoch in range(1000000):
     
     
         
-    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise, rel : batch_rel}) # K2M    
-print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test , rel : f_teRel }))   # K2M 
+#    optimizer.run(feed_dict={x:batch_raw, x_noise: batch_noise, rel : batch_rel}) # K2M    
+#print(sess.run(cost, feed_dict={x: f_telab, x_noise: f_test , rel : f_teRel }))   # K2M 
 
-#    optimizer.run(feed_dict={x_noise:batch_raw, x: batch_noise, rel : batch_rel})  # M2K 
-#print(sess.run(cost, feed_dict={x_noise: f_telab, x: f_test , rel : f_teRel }))    # M2K 
+    optimizer.run(feed_dict={x_noise:batch_raw, x: batch_noise, rel : batch_rel})  # M2K 
+print(sess.run(cost, feed_dict={x_noise: f_telab, x: f_test , rel : f_teRel }))    # M2K 
 
 #aaa = sess.run(h_d_conv1,feed_dict={x:batch_raw})
 #Ke1 = sess.run(h_e_conv1, feed_dict={x: batch_raw, x_noise: batch_noise})

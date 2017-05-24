@@ -16,13 +16,16 @@ try :
 except:
     import _pickle as cPickle
 
+from sklearn.externals import joblib    
+    
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 
-src_path  = 'I:/AllData_0327/'
+#src_path  = 'I:/AllData_0327/'
+src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Mpfolder  = 'unified Mprime/'
 Rfolder   = 'unified data array/reliability/'
-gprfolder = 'GPR/'
+gprfolder = 'GPR2/'
 
 Rel_th    =  0.7
 
@@ -53,10 +56,10 @@ for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mp
     print(Mfile)  
     print('==================================\n\n\n')    
     
-#    mdata   = cPickle.load(file(Mfile,'rb'))
-#    rdata   = cPickle.load(file(Rfile,'rb'))
-    mdata   = cPickle.load(open(Mfile,'rb'),encoding = 'latin1')
-    rdata   = cPickle.load(open(Rfile,'rb'),encoding = 'latin1')
+    mdata   = cPickle.load(file(Mfile,'rb'))
+    rdata   = cPickle.load(file(Rfile,'rb'))
+#    mdata   = cPickle.load(open(Mfile,'rb'),encoding = 'latin1')
+#    rdata   = cPickle.load(open(Rfile,'rb'),encoding = 'latin1')
     mpdata  = h5py.File(Mpfile,'r')['data'][:]  
     Len     = mpdata.shape[1]
 
@@ -71,33 +74,37 @@ for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mp
         Mp = np.hstack([Mp, mpdata])
         R  = np.hstack([R , rdata[4:10 ,:Len]])
         
-pdb.set_trace()
+
 relidx = np.where(np.sum((R<Rel_th)*1,0)==0)[0]   # frames which have all joints reliable
         
 M  = (M.T[relidx,:] -MIN)/(MAX-MIN) 
 Mp = (Mp.T[relidx,:]-MIN)/(MAX-MIN) 
 
+pdb.set_trace()
 gp.fit(Mp, M)
 
-cPickle.dump(gp,file(src_path+gprfolder+'GP_model_0521.pkl','wb'))
-
+print('training finish....')
+#cPickle.dump(gp,file(src_path+gprfolder+'GP_model_0521.pkl','wb'))
+joblib.dump(gp,src_path+gprfolder+'GP_model_0521.pkl')
 
 
 
 # =======================================
 
-#
-#for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.h5')):
-#    
-#    mpdata  = h5py.File(Mpfile,'r')['data'][:]  
-#    Len     = mpdata.shape[1]
-#    Mgpr    = np.zeros((18,Len))
-#    for ii in xrange(Len):
-#        
-#        Mpred = gp.predict(mpdata[:,ii])
-#        Mgpr[:,ii] = Mpred
 
-
+for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.h5')):
+    
+    mpdata  = h5py.File(Mpfile,'r')['data'][:]  
+    Len     = mpdata.shape[1]
+    Mgpr    = np.zeros((18,Len))
+    print(Mpfile)
+    for ii in range(Len):
+        
+        Mpred = gp.predict(mpdata[:,ii].reshape((-1,18)))
+        Mgpr[:,ii] = Mpred[0,:]
+    
+    fname = src_path+gprfolder+Mpfile.split('\\')[-1][:-3]+'.pkl'
+    cPickle.dump(Mgpr*(MAX-MIN)+MIN,open(fname,'wb'))
 
 
 
