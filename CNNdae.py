@@ -12,7 +12,7 @@ from random import shuffle as sf
 
 src_path = './Concatenate_Data/CNN/'
 dst_path = './data/CNN/'
-date_ext = '_CNN_gpr_0524'
+date_ext = '_CNN_gpr_0531_smo'
 data_ext = '_Mgpr2K_rel'
 
 joints_num  = 6             # number of joints
@@ -115,7 +115,7 @@ sf(idx)
 
 
 
-for epoch in range(1000000):
+for epoch in range(500000):
         
     if (counter+1)*batch_size >f_train.shape[0]:
         counter = 0

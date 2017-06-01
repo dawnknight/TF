@@ -13,11 +13,11 @@ from random import shuffle as sf
 #src_path = 'I:/AllData_0327/unified data/'
 src_path = 'D:/Project/K_project/data/Motion and Kinect unified/'
 Kfolder  = 'Unified_KData/'
-Mfolder  = '../GPR2' 
+Mfolder  = '../unified Kprime smooth' 
 Rfolder  = 'reliability/'
 
 dst_path = './Concatenate_Data/CNN/'
-date_ext = '_CNN_gpr_0524'
+date_ext = '_CNN_gpr_0531_smo'
 exeno =  'ex4'
 
 group_size = 30 # sample number per group
@@ -31,16 +31,17 @@ Msubtensor = {}
 Rsubtensor = {}    
 
 for kinfile,minfile,rinfile  in zip(glob.glob(os.path.join(src_path+Kfolder,'*ex4.pkl')),\
-                                    glob.glob(os.path.join(src_path+Mfolder,'*ex4.pkl')),\
+                                    glob.glob(os.path.join(src_path+Mfolder,'*ex4.h5')),\
                                     glob.glob(os.path.join(src_path+Rfolder,'*Rel_ex4.pkl'))):    
     print('group_'+str(index+1)+'......')
     print  kinfile
     print  minfile  
     print  rinfile
-    print('==================================\n\n\n')
+    print('==============  tensorgen_gpr  ====================\n\n\n')
 
     kdata = cPickle.load(file(kinfile,'r'))
-    mdata = cPickle.load(file(minfile,'r'))
+#    mdata = cPickle.load(file(minfile,'r'))
+    mdata = h5py.File(minfile,'r')['data'][:]
     rdata = cPickle.load(file(rinfile,'r'))
     
     length = min(kdata[0].shape[1],mdata.shape[1])

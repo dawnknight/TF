@@ -23,9 +23,9 @@ from sklearn.externals import joblib
 #src_path  = 'I:/AllData_0327/'
 src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
-Mpfolder  = 'unified Mprime/'
+Mpfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
-gprfolder = 'GPR2/'
+gprfolder = 'GPR_K2M/'
 
 Rel_th    =  0.7
 
@@ -44,34 +44,36 @@ kernel_gpml = k1 + k4
 
 
 gp = GaussianProcessRegressor(kernel=kernel_gpml, alpha=0,
-                              optimizer=None, normalize_y=True)
+                              optimizer='fmin_l_bfgs_b', normalize_y=True)
 
 
-for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mpfolder,'*.h5')),\
+for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mpfolder,'*.pkl')),\
                                               glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl')),\
                                               glob.glob(os.path.join(src_path+Rfolder,'*ex4.pkl')))):
-
+    
     print(Mpfile)
     print(Rfile)
     print(Mfile)  
     print('==================================\n\n\n')    
     
-    mdata   = cPickle.load(file(Mfile,'rb'))
-    rdata   = cPickle.load(file(Rfile,'rb'))
-#    mdata   = cPickle.load(open(Mfile,'rb'),encoding = 'latin1')
-#    rdata   = cPickle.load(open(Rfile,'rb'),encoding = 'latin1')
-    mpdata  = h5py.File(Mpfile,'r')['data'][:]  
-    Len     = mpdata.shape[1]
+#    mdata   = cPickle.load(file(Mfile,'rb'))
+#    rdata   = cPickle.load(file(Rfile,'rb'))
+#    mpdata  = cPickle.load(file(Mpfile,'rb'))
+    mdata   = cPickle.load(open(Mfile,'rb') ,encoding = 'latin1')
+    rdata   = cPickle.load(open(Rfile,'rb') ,encoding = 'latin1')
+    mpdata  = cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')
+#    mpdata  = h5py.File(Mpfile,'r')['data'][:]  
+    Len     = min(mpdata.shape[1],mdata.shape[1])
 
 
     if idx == 0:
         
         M  = mdata[12:30,:Len]
-        Mp = mpdata
+        Mp = mpdata[12:30,:Len]
         R  = rdata[4:10 ,:Len]
     else:
         M  = np.hstack([M , mdata[12:30,:Len]])
-        Mp = np.hstack([Mp, mpdata])
+        Mp = np.hstack([Mp, mpdata[12:30,:Len]])
         R  = np.hstack([R , rdata[4:10 ,:Len]])
         
 
@@ -80,21 +82,23 @@ relidx = np.where(np.sum((R<Rel_th)*1,0)==0)[0]   # frames which have all joints
 M  = (M.T[relidx,:] -MIN)/(MAX-MIN) 
 Mp = (Mp.T[relidx,:]-MIN)/(MAX-MIN) 
 
-pdb.set_trace()
+print('training ....')
 gp.fit(Mp, M)
 
 print('training finish....')
 #cPickle.dump(gp,file(src_path+gprfolder+'GP_model_0521.pkl','wb'))
-joblib.dump(gp,src_path+gprfolder+'GP_model_0521.pkl')
+joblib.dump(gp,src_path+gprfolder+'GP_model_0524.pkl')
 
+print('model saved....')
 
 
 # =======================================
 
 
 for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.h5')):
-    
-    mpdata  = h5py.File(Mpfile,'r')['data'][:]  
+     
+#    mpdata  = (h5py.File(Mpfile,'r')['data'][:] -MIN)/(MAX-MIN)
+    mpdata  = (cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')[12:30,:Len]-MIN)/(MAX-MIN)
     Len     = mpdata.shape[1]
     Mgpr    = np.zeros((18,Len))
     print(Mpfile)
@@ -103,9 +107,12 @@ for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.h5')):
         Mpred = gp.predict(mpdata[:,ii].reshape((-1,18)))
         Mgpr[:,ii] = Mpred[0,:]
     
-    fname = src_path+gprfolder+Mpfile.split('\\')[-1][:-3]+'.pkl'
-    cPickle.dump(Mgpr*(MAX-MIN)+MIN,open(fname,'wb'))
-
+    fname = src_path+gprfolder+Mpfile.split('\\')[-1][:-3]+'.h5'
+    
+#    cPickle.dump(Mgpr*(MAX-MIN)+MIN,open(fname,'wb'))
+    f = h5py.File(fname,'w')
+    f.create_dataset('data',data = Mgpr*(MAX-MIN)+MIN)
+    f.close()
 
 
 
