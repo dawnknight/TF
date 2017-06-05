@@ -44,7 +44,7 @@ kernel_gpml = k1 + k4
 
 
 gp = GaussianProcessRegressor(kernel=kernel_gpml, alpha=0,
-                              optimizer='fmin_l_bfgs_b', normalize_y=True)
+                              optimizer=None, normalize_y=True)
 
 
 for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mpfolder,'*.pkl')),\
