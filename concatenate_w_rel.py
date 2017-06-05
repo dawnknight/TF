@@ -16,7 +16,7 @@ Msrc_path = 'D:/Project/K_project/data/Motion and Kinect unified/Unified_MData/'
 Rsrc_path = 'D:/Project/K_project/data/Motion and Kinect unified/reliability/'
 
 dst_path = './Concatenate_Data/'
-date_ext = '_REL0504'
+date_ext = '_REL0605'
 
 #exe_list = ['ex1','ex2','ex3','ex4','ex5','ex6','ex7']
 exe_list = ['ex4']
