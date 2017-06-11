@@ -5,7 +5,7 @@ Created on Tue May 30 16:47:36 2017
 @author: medialab
 """
 
-import cPickle,h5py
+import h5py
 import numpy as np
 import glob,os,pdb
 
@@ -19,8 +19,8 @@ Jlen['0506'] = 27.1  #Lelbow2Lwrist
 '''
 factor = 5
 src_path = 'D:/Project/K_project/data/'
-folder  = 'GPR2/'
-dst_path = 'D:/Project/K_project/data/unified GPR/'
+folder  = 'GPR_K2M/'
+dst_path = 'D:/Project/K_project/data/unified GPR_K2M/'
 
 def uni_vec(Body):
     vec = np.roll(Body,-3,axis = 0)-Body
@@ -32,9 +32,11 @@ def uni_vec(Body):
 
 
 
-for infile in glob.glob(os.path.join(src_path+folder,'*ex4.pkl')):
-  
-    data = cPickle.load(file(infile,'rb'))
+#for infile in glob.glob(os.path.join(src_path+folder,'*ex4.pkl')):
+for infile in glob.glob(os.path.join(src_path+folder,'*.h5')):
+    
+#    data = cPickle.load(file(infile,'rb'))
+    data = h5py.File(infile,'r')['data'][:]
     
     uni_data = np.zeros(data.shape)
     univec = uni_vec(data)

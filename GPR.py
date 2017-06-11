@@ -94,8 +94,9 @@ print('model saved....')
 
 # =======================================
 
+#gp = cPickle.load(file(src_path+gprfolder+'GP_model_0524.pkl','rb'))
 
-for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.h5')):
+for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.pkl')):
      
 #    mpdata  = (h5py.File(Mpfile,'r')['data'][:] -MIN)/(MAX-MIN)
     mpdata  = (cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')[12:30,:Len]-MIN)/(MAX-MIN)
