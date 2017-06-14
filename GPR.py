@@ -91,7 +91,7 @@ joblib.dump(gp,src_path+gprfolder+'GP_model_0524.pkl')
 
 print('model saved....')
 
-
+gp = joblib.load(src_path+gprfolder+'GP_model_0524.pkl')
 # =======================================
 
 #gp = cPickle.load(file(src_path+gprfolder+'GP_model_0524.pkl','rb'))
@@ -99,7 +99,7 @@ print('model saved....')
 for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.pkl')):
      
 #    mpdata  = (h5py.File(Mpfile,'r')['data'][:] -MIN)/(MAX-MIN)
-    mpdata  = (cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')[12:30,:Len]-MIN)/(MAX-MIN)
+    mpdata  = (cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')[12:30,:]-MIN)/(MAX-MIN)
     Len     = mpdata.shape[1]
     Mgpr    = np.zeros((18,Len))
     print(Mpfile)

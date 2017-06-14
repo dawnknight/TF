@@ -34,7 +34,7 @@ def uni_vec(Body):
 
 #for infile in glob.glob(os.path.join(src_path+folder,'*ex4.pkl')):
 for infile in glob.glob(os.path.join(src_path+folder,'*.h5')):
-    
+    print(infile)
 #    data = cPickle.load(file(infile,'rb'))
     data = h5py.File(infile,'r')['data'][:]
     
