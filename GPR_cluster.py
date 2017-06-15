@@ -112,8 +112,11 @@ for ncluster in range(10000,100,-100):
     print('Mocap Clustering(',ncluster,')')
     t0=time()
 #    image_array_sample = shuffle(M_rel, random_state=0)[:3000]
+
+    print('start Kmeans clustering')
     kmeans = KMeans(n_clusters=ncluster, random_state=None,init='k-means++',n_init=10).fit(M_rel)
     labels_M = kmeans.predict(M_rel)
+    print('Kmeans clustering finish')
     #recreate_m=kmeans.cluster_centers_[labels_m]
     #centroids_m=kmeans.cluster_centers_
     print(time()-t0)
@@ -160,3 +163,10 @@ for ncluster in range(10000,100,-100):
     
     Err[ncluster] = err
     print('Err=',err)
+    fname = 'Err'+repr(ncluster).zfill(5)+'.h5'
+    f = h5py.File(fname,'w')
+    f.create_dataset('data',data = Err)
+    f.close()
+    
+    
+    
