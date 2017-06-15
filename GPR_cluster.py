@@ -45,6 +45,7 @@ Mfolder   = 'unified data array/Unified_MData/'
 Mpfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
 gprfolder = 'GPR_K2M/'
+Errfolder = 'GPR_cluster_err/'
 
 Rel_th    =  0.7
 factor    =  5
@@ -74,12 +75,12 @@ for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mp
     print(Mfile)
     print('==================================\n\n\n')
 
-    mdata   = cPickle.load(file(Mfile,'rb'))
-    rdata   = cPickle.load(file(Rfile,'rb'))
-    mpdata  = cPickle.load(file(Mpfile,'rb'))
-#    mdata   = cPickle.load(open(Mfile,'rb') ,encoding = 'latin1')
-#    rdata   = cPickle.load(open(Rfile,'rb') ,encoding = 'latin1')
-#    mpdata  = cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')
+#    mdata   = cPickle.load(file(Mfile,'rb'))
+#    rdata   = cPickle.load(file(Rfile,'rb'))
+#    mpdata  = cPickle.load(file(Mpfile,'rb'))
+    mdata   = cPickle.load(open(Mfile,'rb') ,encoding = 'latin1')
+    rdata   = cPickle.load(open(Rfile,'rb') ,encoding = 'latin1')
+    mpdata  = cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')
 
     Len     = min(mpdata.shape[1],mdata.shape[1])
 
@@ -106,7 +107,7 @@ Mp_rel =  Mp.T[relidx,:]
 
 Err={}
 
-for ncluster in range(10000,100,-100):
+for ncluster in range(1100,10000,100):
 
     # Cluster of Mocap Data
     print('Mocap Clustering(',ncluster,')')
@@ -163,10 +164,10 @@ for ncluster in range(10000,100,-100):
     
     Err[ncluster] = err
     print('Err=',err)
-    fname = 'Err'+repr(ncluster).zfill(5)+'.h5'
-    f = h5py.File(fname,'w')
-    f.create_dataset('data',data = Err)
-    f.close()
-    
+    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'.pkl'
+#    f = h5py.File(fname,'w')
+#    f.create_dataset('data',data = Err)
+#    f.close()
+    cPickle.dump(Err,open(fname,'wb'))
     
     
