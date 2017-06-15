@@ -138,10 +138,10 @@ for ncluster in range(1100,10000,100):
     print('Training')
     gp.fit(centroids_Mp, centroids_M)
 
-    print("\nLearned kernel: %s" % gp.kernel_)
-    print("Log-marginal-likelihood: %.3f"
-          % gp.log_marginal_likelihood(gp.kernel_.theta))
-    learned_kernel=gp.kernel_
+#    print("\nLearned kernel: %s" % gp.kernel_)
+#    print("Log-marginal-likelihood: %.3f"
+#          % gp.log_marginal_likelihood(gp.kernel_.theta))
+#    learned_kernel=gp.kernel_
 
     # Prediction
     print('Predicting')
