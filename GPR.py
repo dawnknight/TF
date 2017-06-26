@@ -108,7 +108,7 @@ for Mpfile in glob.glob(os.path.join(src_path+Mfolder,'*.pkl')):
         Mpred = gp.predict(mpdata[:,ii].reshape((-1,18)))
         Mgpr[:,ii] = Mpred[0,:]
     
-    fname = src_path+gprfolder+Mpfile.split('\\')[-1][:-3]+'.h5'
+    fname = src_path+gprfolder+Mpfile.split('\\')[-1][:-3]+'h5'
     
 #    cPickle.dump(Mgpr*(MAX-MIN)+MIN,open(fname,'wb'))
     f = h5py.File(fname,'w')
