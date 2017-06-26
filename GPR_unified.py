@@ -19,8 +19,8 @@ Jlen['0506'] = 27.1  #Lelbow2Lwrist
 '''
 factor = 5
 src_path = 'D:/Project/K_project/data/'
-folder  = 'GPR_K2M/'
-dst_path = 'D:/Project/K_project/data/unified GPR_K2M/'
+folder  = 'GPR_M2K/'
+dst_path = 'D:/Project/K_project/data/unified GPR_M2K/'
 
 def uni_vec(Body):
     vec = np.roll(Body,-3,axis = 0)-Body

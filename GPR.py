@@ -25,7 +25,7 @@ src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Mpfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
-gprfolder = 'GPR_K2M/'
+gprfolder = 'GPR_M2K/'
 
 Rel_th    =  0.7
 
@@ -83,20 +83,20 @@ M  = (M.T[relidx,:] -MIN)/(MAX-MIN)
 Mp = (Mp.T[relidx,:]-MIN)/(MAX-MIN) 
 
 print('training ....')
-gp.fit(Mp, M)
+gp.fit(M, Mp)
 
 print('training finish....')
 #cPickle.dump(gp,file(src_path+gprfolder+'GP_model_0521.pkl','wb'))
-joblib.dump(gp,src_path+gprfolder+'GP_model_0524.pkl')
+joblib.dump(gp,src_path+gprfolder+'GP_model_0625.pkl')
 
 print('model saved....')
 
-gp = joblib.load(src_path+gprfolder+'GP_model_0524.pkl')
+#gp = joblib.load(src_path+gprfolder+'GP_model_0625.pkl')
 # =======================================
 
 #gp = cPickle.load(file(src_path+gprfolder+'GP_model_0524.pkl','rb'))
 
-for Mpfile in glob.glob(os.path.join(src_path+Mpfolder,'*.pkl')):
+for Mpfile in glob.glob(os.path.join(src_path+Mfolder,'*.pkl')):
      
 #    mpdata  = (h5py.File(Mpfile,'r')['data'][:] -MIN)/(MAX-MIN)
     mpdata  = (cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')[12:30,:]-MIN)/(MAX-MIN)
