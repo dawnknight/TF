@@ -20,15 +20,17 @@ Jlen['0506'] = 27.1  #Lelbow2Lwrist
 factor = 5
 src_path = 'D:/Project/K_project/data/'
 folder  = 'GPR_M2K/'
-dst_path = 'D:/Project/K_project/data/unified GPR_M2K/'
+dst_path = 'D:/Project/K_project/data/unified GPR_M2K/test/'
 
 def uni_vec(Body):
     vec = np.roll(Body,-3,axis = 0)-Body
     
     tmp = ((vec**2).reshape(-1,3,vec.shape[1]).sum(axis=1))**.5
     vlen = np.insert(np.insert(tmp,np.arange(6),tmp,0),np.arange(0,12,2),tmp,0)
+    vecLR  = Body[9:12,:]-Body[0:3,:]
+    L2Rshlder = vecLR / ((vecLR**2).reshape(-1,3,vecLR.shape[1]).sum(axis=1))**.5
        
-    return vec/vlen
+    return vec/vlen,L2Rshlder
 
 
 
@@ -39,10 +41,11 @@ for infile in glob.glob(os.path.join(src_path+folder,'*.h5')):
     data = h5py.File(infile,'r')['data'][:]
     
     uni_data = np.zeros(data.shape)
-    univec = uni_vec(data)
+    univec,L2Rshlder = uni_vec(data)
     
     uni_data[0:3  ,:] = data[0:3  ,:]
-    uni_data[9:12 ,:] = data[9:12 ,:]
+#    uni_data[9:12 ,:] = data[9:12 ,:]
+    uni_data[9:12 ,:] = data[0:3  ,:]+L2Rshlder*16.65*2*factor
     
     uni_data[3:6  ,:] = data[0:3  ,:]+univec[0:3  ,:]*33.2*factor
     uni_data[6:9  ,:] = data[3:6  ,:]+univec[3:6  ,:]*27.1*factor
