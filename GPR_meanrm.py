@@ -25,7 +25,7 @@ src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Mpfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
-gprfolder = 'GPR_M2K/'
+gprfolder = 'GPR_K2M/0702/'
 
 Rel_th    =  0.7
 
@@ -43,7 +43,7 @@ k4 = 0.18**2 * RBF(length_scale=0.134) \
 kernel_gpml = k1 + k4
 
 
-gp = GaussianProcessRegressor(kernel=kernel_gpml)
+gp = GaussianProcessRegressor(kernel=kernel_gpml, alpha=0, normalize_y=True)
 
 
 for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mpfolder,'*.pkl')),\
@@ -74,6 +74,8 @@ for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mp
         M  = np.hstack([M , mdata[12:30,:Len]])
         Mp = np.hstack([Mp, mpdata[12:30,:Len]])
         R  = np.hstack([R , rdata[4:10 ,:Len]])
+
+
         
 
 relidx = np.where(np.sum((R<Rel_th)*1,0)==0)[0]   # frames which have all joints reliable
@@ -81,12 +83,19 @@ relidx = np.where(np.sum((R<Rel_th)*1,0)==0)[0]   # frames which have all joints
 M  = (M.T[relidx,:] -MIN)/(MAX-MIN) 
 Mp = (Mp.T[relidx,:]-MIN)/(MAX-MIN) 
 
+M_mean  = np.mean(M,1)
+Mp_mean = np.mean(Mp,1)
+
+M  = M  - M_mean
+Mp = Mp - Mp_mean
+
 print('training ....')
 gp.fit(M, Mp)
 
 print('training finish....')
 #cPickle.dump(gp,file(src_path+gprfolder+'GP_model_0521.pkl','wb'))
-joblib.dump(gp,src_path+gprfolder+'GP_model_0702.pkl')
+joblib.dump(gp,src_path+gprfolder+'GP_model_0703.pkl')
+joblib.dump([M_mean,Mp_mean],src_path+gprfolder+'GP_model_0703_para.pkl')
 
 print('model saved....')
 
@@ -105,7 +114,7 @@ for Mpfile in glob.glob(os.path.join(src_path+Mfolder,'*.pkl')):
     for ii in range(Len):
         
         Mpred = gp.predict(mpdata[:,ii].reshape((-1,18)))
-        Mgpr[:,ii] = Mpred[0,:]
+        Mgpr[:,ii] = Mpred[0,:]+Mp_mean
     
     fname = src_path+gprfolder+Mpfile.split('\\')[-1][:-3]+'h5'
     

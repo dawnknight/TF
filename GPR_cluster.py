@@ -75,12 +75,12 @@ for idx,(Mpfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Mp
     print(Mfile)
     print('==================================\n\n\n')
 
-#    mdata   = cPickle.load(file(Mfile,'rb'))
-#    rdata   = cPickle.load(file(Rfile,'rb'))
-#    mpdata  = cPickle.load(file(Mpfile,'rb'))
-    mdata   = cPickle.load(open(Mfile,'rb') ,encoding = 'latin1')
-    rdata   = cPickle.load(open(Rfile,'rb') ,encoding = 'latin1')
-    mpdata  = cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')
+    mdata   = cPickle.load(file(Mfile,'rb'))
+    rdata   = cPickle.load(file(Rfile,'rb'))
+    mpdata  = cPickle.load(file(Mpfile,'rb'))
+#    mdata   = cPickle.load(open(Mfile,'rb') ,encoding = 'latin1')
+#    rdata   = cPickle.load(open(Rfile,'rb') ,encoding = 'latin1')
+#    mpdata  = cPickle.load(open(Mpfile,'rb'),encoding = 'latin1')
 
     Len     = min(mpdata.shape[1],mdata.shape[1])
 
@@ -105,9 +105,15 @@ relidx = np.where(np.sum((R<Rel_th)*1,0)==0)[0]
 M_rel  =  M.T[relidx ,:]
 Mp_rel =  Mp.T[relidx,:]
 
+M_mean = np.mean(M_rel,0)
+Mp_mean = np.mean(Mp_rel,0)
+
+M_rel = M_rel-M_mean
+Mp_rel = Mp_rel-Mp_mean
+
 Err={}
 
-for ncluster in range(1100,10000,100):
+for ncluster in range(200,1100,100):
 
     # Cluster of Mocap Data
     print('Mocap Clustering(',ncluster,')')
@@ -132,8 +138,7 @@ for ncluster in range(1100,10000,100):
 
     # Gaussian Regression
 
-    gp = GaussianProcessRegressor(kernel=kernel_gpml, alpha=0,
-                                  optimizer=None, normalize_y=True)
+    gp = GaussianProcessRegressor(kernel=kernel_gpml)
 
     print('Training')
     gp.fit(centroids_Mp, centroids_M)
@@ -146,7 +151,7 @@ for ncluster in range(1100,10000,100):
     # Prediction
     print('Predicting')
     y_pred, y_std = gp.predict(Mp.T, return_std=True)
-    data=y_pred.T
+    data=y_pred.T + M_mean.reshape(18,-1)
     uni_data = np.zeros(data.shape)
     univec = uni_vec(data)
 
@@ -160,14 +165,44 @@ for ncluster in range(1100,10000,100):
 
     diff = M-uni_data
     diffT = M.T-uni_data.T
-    err = np.sum(np.sum(((M-uni_data).reshape(-1,3,M.shape[1]))**2,axis=1)**0.5)
+    err = np.sum(np.sum(((M-uni_data).reshape(-1,3,M.shape[1]))**2,axis=1)**0.5)/50247/6
     
     Err[ncluster] = err
     print('Err=',err)
-    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'.pkl'
+    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_rmmean.pkl'
 #    f = h5py.File(fname,'w')
 #    f.create_dataset('data',data = Err)
 #    f.close()
     cPickle.dump(Err,open(fname,'wb'))
     
+#=====================
+import matplotlib.pyplot as plt
+
+Err     = cPickle.load(open('Err00200.pkl','rb')        ,encoding = 'latin1')
+Err_opt = cPickle.load(open(src_path+Errfolder+'Err01000.pkl','rb')        ,encoding = 'latin1')
+Err_rm  = cPickle.load(open(src_path+Errfolder+'Err01000_rmmean.pkl','rb') ,encoding = 'latin1')
+
+err    = []
+erropt = []
+errrm  = []
+
+for i in Err_opt.keys():
+    err.append(Err[i]/50247/6)
+    erropt.append(Err_opt[i]/50247/6)
+    errrm.append(Err_rm[i]) 
+    
+plt.title('GPR cluster')
+plt.xlabel('cluster number')
+plt.ylabel('err (pixel per joint)')   
+plt.plot(range(200,1100,100),err,color = 'blue' , label = 'no opt')  
+plt.plot(range(200,1100,100),erropt,color = 'green' , label = 'with opt')
+plt.plot(range(200,1100,100),errrm,color = 'red' , label = 'mean remove with opt')
+plt.legend( loc=1)
+plt.draw()
+plt.show()
+
+
+
+
+
     
