@@ -68,9 +68,9 @@ M           = (cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Mdata'
 K           = (cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
 R           = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rdata'][4:10,:] 
 
-Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0).T
+Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
 
-Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),np.arange(0,12,2),R_test_unrel,0).T 
+Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),np.arange(0,12,2),R_test_unrel,0)
 
        
 M_rel = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
@@ -87,7 +87,7 @@ Err['test_rel']={}
 Err['test_unrel']={}
 
 
-for ncluster in range(200,1100,100):
+for ncluster in range(5100,7100,100):
 
     # Cluster of Mocap Data
     print('Mocap Clustering(',ncluster,')')
@@ -167,12 +167,12 @@ for ncluster in range(200,1100,100):
 
 
 
-    err = np.sum(np.sum((((M*(MAX-MIN)+MIN)-uni_data).reshape(-1,3,M.shape[1]))**2,axis=1)**0.5)/50247/6
-    err_unrel = np.sum(np.sum(((((M*(MAX-MIN)+MIN)-uni_data)[Rmtx<Rel_th]).reshape(-1,3,M.shape[1]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
+    err = np.sum(np.sum((((M.T*(MAX-MIN)+MIN)-uni_data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
+    err_unrel = np.sum(np.sum(((((M.T*(MAX-MIN)+MIN)-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
 
-    err_test_rel = np.sum(np.sum(((M_test_rel-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[1]))**2,axis=1)**0.5)/5651/6 
-    err_test_unrel = np.sum(np.sum(((M_test_unrel-uni_data_test_unrel)[Rmtx_test_unrel<Rel_th]\
-                                    .reshape(-1,3,M_test_unrel.shape[1]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
+    err_test_rel = np.sum(np.sum(((M_test_rel.T-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/5651/6 
+    err_test_unrel = np.sum(np.sum( (((M_test_unrel.T-uni_data_test_unrel)*(Rmtx_test_unrel<Rel_th))\
+                                    .reshape(-1,3,M_test_unrel.shape[0]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
 
 
 

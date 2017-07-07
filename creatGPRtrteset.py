@@ -14,10 +14,11 @@ import cPickle,glob,os
 import numpy as np
 from random import shuffle as sf
 
-src_path  = 'D:/Project/K_project/data/'
+#src_path  = 'D:/Project/K_project/data/'
+src_path  = 'I:/AllData_0327/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
-Rfolder   = 'unified data array/reliability_mod/'
+Rfolder   = 'unified data array/reliability/'
 
 Rel_th = 0.7
 
@@ -99,7 +100,7 @@ dataset['Mdata'] = M
 dataset['Kdata'] = K
 dataset['Rdata'] = R
 
-cPickle.dump(dataset,file('GPR_training_testing_set33.pkl','wb'))
+cPickle.dump(dataset,file('old_GPR_training_testing_set33.pkl','wb'))
 
 
 
