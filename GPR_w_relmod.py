@@ -42,11 +42,11 @@ kernel_gpml = k1 + k4
 gp = GaussianProcessRegressor(kernel=kernel_gpml)
 
 
-M_train_rel = cPickle.load(file('GPR_training_testing_set.pkl','rb'))['Rel_train_M'].T
-K_train_rel = cPickle.load(file('GPR_training_testing_set.pkl','rb'))['Rel_train_K'].T
+M_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_M'].T
+K_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_K'].T
 
         
-M  = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
+M  = (M_train_rel[:15000,:]-MIN)/(MAX-MIN) 
 K  = (K_train_rel[:15000,:]-MIN)/(MAX-MIN) 
 
 print('training ....')
@@ -54,7 +54,7 @@ gp.fit(K, M)
 
 print('training finish....')
 
-joblib.dump(gp,src_path+gprfolder+'GP_model_0706.pkl')
+joblib.dump(gp,src_path+gprfolder+'GP_model_0707.pkl')
 
 print('model saved....')
 
@@ -70,8 +70,8 @@ for Infile,outfile,Rfile in zip(glob.glob(os.path.join(src_path+Infolder,'*.pkl'
                                 glob.glob(os.path.join(src_path+outfolder,'*ex4_FPS30_motion_unified.pkl')),\
                                  glob.glob(os.path.join(src_path+Rfolder,'*ex4.pkl'))):
      
-    Indata  = (h5py.File(Infile,'r')['data'][:] -MIN)/(MAX-MIN)
-    outdata = h5py.File(outfile,'r')['data'][:]
+    Indata  = (cPickle.load(file(Infile,'rb')) -MIN)/(MAX-MIN)
+    outdata = cPickle.load(file(outfile,'rb'))
     rdata   = cPickle.load(file(Rfile,'rb'))
         
 #    Indata  = (cPickle.load(open(Infile,'rb'),encoding = 'latin1')[12:30,:]-MIN)/(MAX-MIN)
@@ -88,8 +88,12 @@ for Infile,outfile,Rfile in zip(glob.glob(os.path.join(src_path+Infolder,'*.pkl'
         Mpred = gp.predict(Indata[:,ii].reshape((-1,18)))
         Mgpr[:,ii] = Mpred[0,:]*(MAX-MIN)+MIN
     
-    Err = Err + np.sum(abs(Mgpr[:,:Len]-outdata[:,:Len]))
-    Err_unrel + np.sum(abs((Mgpr[:,:Len]-outdata[:,:Len])[unrel_idx]))
+#    Err = Err + np.sum(abs(Mgpr[:,:Len]-outdata[:,:Len]))    
+#    Err_unrel + np.sum(abs((Mgpr[:,:Len]-outdata[:,:Len])[unrel_idx]))
+
+    Err = Err + np.sum(np.sum(((Mgpr[:,:Len]-outdata[:,:Len]).reshape(-1,3,Len))**2,axis=1)**0.5)    
+    Err_unrel + np.sum(np.sum((((Mgpr[:,:Len]-outdata[:,:Len])[unrel_idx]).reshape(-1,3,Len))**2,axis=1)**0.5)
+
 
     fname = src_path+gprfolder+Infile.split('\\')[-1][:-3]+'h5'
     
@@ -97,9 +101,10 @@ for Infile,outfile,Rfile in zip(glob.glob(os.path.join(src_path+Infolder,'*.pkl'
     f.create_dataset('data',data = Mgpr)
     f.close()
 
+R           = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rdata'][4:10,:] 
    
 print Err/50247/6
-print Err_unrel/50247/6
+print Err_unrel/np.sum(R<Rel_th)
       
         
     
