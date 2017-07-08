@@ -6,7 +6,7 @@ Created on Thu Jul 06 15:48:10 2017
 """
 
 
-#import h5py,glob,os,pdb
+import h5py,glob,os,pdb
 import numpy as np
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels \
@@ -40,37 +40,37 @@ def uni_vec(Body):
 
     return vec/vlen
 
+#
+#k1 = 66.0**2 * RBF(length_scale=67.0)  # long term smooth rising trend
+#
+#    
+#k4 = 0.18**2 * RBF(length_scale=0.134) \
+#    + WhiteKernel(noise_level=0.19**2)  # noise terms
+#    
+#kernel_gpml = k1 + k4
+#
+#
+#gp = GaussianProcessRegressor(kernel=kernel_gpml)
+#
+#
+#M_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_M'][12:30].T
+#K_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_K'][12:30].T
+#
+#        
+#M  = (M_train_rel[:15000,:]-MIN)/(MAX-MIN) 
+#K  = (K_train_rel[:15000,:]-MIN)/(MAX-MIN) 
+#
+#print('training ....')
+#gp.fit(K, M)
+#
+#print('training finish....')
+#
+#joblib.dump(gp,src_path+gprfolder+'GP_model_0707_18j.pkl')
+#
+#print('model saved....')
 
-k1 = 66.0**2 * RBF(length_scale=67.0)  # long term smooth rising trend
-
-    
-k4 = 0.18**2 * RBF(length_scale=0.134) \
-    + WhiteKernel(noise_level=0.19**2)  # noise terms
-    
-kernel_gpml = k1 + k4
-
-
-gp = GaussianProcessRegressor(kernel=kernel_gpml)
-
-
-M_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_M'][12:30].T
-K_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_K'][12:30].T
-
-        
-M  = (M_train_rel[:15000,:]-MIN)/(MAX-MIN) 
-K  = (K_train_rel[:15000,:]-MIN)/(MAX-MIN) 
-
-print('training ....')
-gp.fit(K, M)
-
-print('training finish....')
-
-joblib.dump(gp,src_path+gprfolder+'GP_model_0707_18j.pkl')
-
-print('model saved....')
-
-#gp = joblib.load(src_path+gprfolder+'GP_model_0625.pkl')
-# =======================================
+##gp = joblib.load(src_path+gprfolder+'GP_model_0625.pkl')
+## =======================================
 
 
 Err = 0
@@ -88,7 +88,8 @@ for Infile,outfile,Rfile in zip(glob.glob(os.path.join(src_path+Infolder,'*.pkl'
 
     Len     = min(Indata.shape[1],outdata.shape[1])
     R    = rdata[4:10 ,:Len]
-    unrel_idx = R<Rel_th
+    Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
+    unrel_idx = Rmtx<Rel_th
     
     Mgpr    = np.zeros((18,Indata.shape[1]))
     print(Infile)
