@@ -123,7 +123,7 @@ for Infile,outfile,Rfile in zip(glob.glob(os.path.join(src_path+Infolder,'*.pkl'
 
 
     Err = Err + np.sum(np.sum(((uni_data[:,:Len]-outdata[:,:Len]).reshape(-1,3,Len))**2,axis=1)**0.5)    
-    Err_unrel + np.sum(np.sum((((uni_data[:,:Len]-outdata[:,:Len])*unrel_idx).reshape(-1,3,Len))**2,axis=1)**0.5)
+    Err_unrel += np.sum(np.sum((((uni_data[:,:Len]-outdata[:,:Len])*unrel_idx).reshape(-1,3,Len))**2,axis=1)**0.5)
 
 
     fname = src_path+gprfolder+Infile.split('\\')[-1][:-3]+'h5'
