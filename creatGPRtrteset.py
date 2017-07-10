@@ -78,20 +78,36 @@ sf(unRel_sidx)
 
 rate = 0.8
 
-dataset['Rel_train_M'] = Rel_M[:,:int(len(Rel_sidx)*0.8) ]
-dataset['Rel_test_M' ] = Rel_M[:, int(len(Rel_sidx)*0.8):]
-dataset['Rel_train_K'] = Rel_K[:,:int(len(Rel_sidx)*0.8) ]
-dataset['Rel_test_K' ] = Rel_K[:, int(len(Rel_sidx)*0.8):]
-dataset['Rel_train_R'] = Rel_R[:,:int(len(Rel_sidx)*0.8) ]
-dataset['Rel_test_R' ] = Rel_R[:, int(len(Rel_sidx)*0.8):]
+#dataset['Rel_train_M'] = Rel_M[:,:int(len(Rel_sidx)*0.8) ]
+#dataset['Rel_test_M' ] = Rel_M[:, int(len(Rel_sidx)*0.8):]
+#dataset['Rel_train_K'] = Rel_K[:,:int(len(Rel_sidx)*0.8) ]
+#dataset['Rel_test_K' ] = Rel_K[:, int(len(Rel_sidx)*0.8):]
+#dataset['Rel_train_R'] = Rel_R[:,:int(len(Rel_sidx)*0.8) ]
+#dataset['Rel_test_R' ] = Rel_R[:, int(len(Rel_sidx)*0.8):]
+#
+#
+#dataset['unRel_train_M'] = unRel_M[:,:int(len(unRel_sidx)*0.8) ]
+#dataset['unRel_test_M' ] = unRel_M[:, int(len(unRel_sidx)*0.8):]
+#dataset['unRel_train_K'] = unRel_K[:,:int(len(unRel_sidx)*0.8) ]
+#dataset['unRel_test_K' ] = unRel_K[:, int(len(unRel_sidx)*0.8):]
+#dataset['unRel_train_R'] = unRel_R[:,:int(len(unRel_sidx)*0.8) ]
+#dataset['unRel_test_R' ] = unRel_R[:, int(len(unRel_sidx)*0.8):]
 
 
-dataset['unRel_train_M'] = unRel_M[:,:int(len(unRel_sidx)*0.8) ]
-dataset['unRel_test_M' ] = unRel_M[:, int(len(unRel_sidx)*0.8):]
-dataset['unRel_train_K'] = unRel_K[:,:int(len(unRel_sidx)*0.8) ]
-dataset['unRel_test_K' ] = unRel_K[:, int(len(unRel_sidx)*0.8):]
-dataset['unRel_train_R'] = unRel_R[:,:int(len(unRel_sidx)*0.8) ]
-dataset['unRel_test_R' ] = unRel_R[:, int(len(unRel_sidx)*0.8):]
+dataset['Rel_train_M'] = Rel_M[:,Rel_sidx[:int(len(Rel_sidx)*0.8) ]]
+dataset['Rel_test_M' ] = Rel_M[:,Rel_sidx[ int(len(Rel_sidx)*0.8):]]
+dataset['Rel_train_K'] = Rel_K[:,Rel_sidx[:int(len(Rel_sidx)*0.8) ]]
+dataset['Rel_test_K' ] = Rel_K[:,Rel_sidx[ int(len(Rel_sidx)*0.8):]]
+dataset['Rel_train_R'] = Rel_R[:,Rel_sidx[:int(len(Rel_sidx)*0.8) ]]
+dataset['Rel_test_R' ] = Rel_R[:,Rel_sidx[ int(len(Rel_sidx)*0.8):]]
+
+
+dataset['unRel_train_M'] = unRel_M[:,unRel_sidx[:int(len(unRel_sidx)*0.8) ]]
+dataset['unRel_test_M' ] = unRel_M[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
+dataset['unRel_train_K'] = unRel_K[:,unRel_sidx[:int(len(unRel_sidx)*0.8) ]]
+dataset['unRel_test_K' ] = unRel_K[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
+dataset['unRel_train_R'] = unRel_R[:,unRel_sidx[:int(len(unRel_sidx)*0.8) ]]
+dataset['unRel_test_R' ] = unRel_R[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
 
 dataset['Rel_sidx']   = relidx
 dataset['unRel_sidx'] = unrelidx
@@ -100,7 +116,7 @@ dataset['Mdata'] = M
 dataset['Kdata'] = K
 dataset['Rdata'] = R
 
-cPickle.dump(dataset,file('old_GPR_training_testing_set33.pkl','wb'))
+cPickle.dump(dataset,file('old_GPR_training_testing_RANDset33.pkl','wb'))
 
 
 
