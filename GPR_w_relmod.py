@@ -40,37 +40,37 @@ def uni_vec(Body):
 
     return vec/vlen
 
-#
-#k1 = 66.0**2 * RBF(length_scale=67.0)  # long term smooth rising trend
-#
-#    
-#k4 = 0.18**2 * RBF(length_scale=0.134) \
-#    + WhiteKernel(noise_level=0.19**2)  # noise terms
-#    
-#kernel_gpml = k1 + k4
-#
-#
-#gp = GaussianProcessRegressor(kernel=kernel_gpml)
-#
-#
-#M_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_M'][12:30].T
-#K_train_rel = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rel_train_K'][12:30].T
-#
-#        
-#M  = (M_train_rel[:15000,:]-MIN)/(MAX-MIN) 
-#K  = (K_train_rel[:15000,:]-MIN)/(MAX-MIN) 
-#
-#print('training ....')
-#gp.fit(K, M)
-#
-#print('training finish....')
-#
-#joblib.dump(gp,src_path+gprfolder+'GP_model_0707_18j.pkl')
-#
-#print('model saved....')
 
-##gp = joblib.load(src_path+gprfolder+'GP_model_0625.pkl')
-## =======================================
+k1 = 66.0**2 * RBF(length_scale=67.0)  # long term smooth rising trend
+
+    
+k4 = 0.18**2 * RBF(length_scale=0.134) \
+    + WhiteKernel(noise_level=0.19**2)  # noise terms
+    
+kernel_gpml = k1 + k4
+
+
+gp = GaussianProcessRegressor(kernel=kernel_gpml)
+
+
+M_train_rel = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_M'][12:30].T
+K_train_rel = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30].T
+
+        
+M  = (M_train_rel[:15000,:]-MIN)/(MAX-MIN) 
+K  = (K_train_rel[:15000,:]-MIN)/(MAX-MIN) 
+
+print('training ....')
+gp.fit(K, M)
+
+print('training finish....')
+
+joblib.dump(gp,src_path+gprfolder+'GP_model_0709_18jRAND.pkl')
+
+print('model saved....')
+
+#gp = joblib.load(src_path+gprfolder+'GP_model_0625.pkl')
+# =======================================
 
 
 Err = 0
@@ -132,7 +132,7 @@ for Infile,outfile,Rfile in zip(glob.glob(os.path.join(src_path+Infolder,'*.pkl'
     f.create_dataset('data',data = Mgpr)
     f.close()
 
-R           = cPickle.load(file('GPR_training_testing_set33.pkl','rb'))['Rdata'][4:10,:] 
+R           = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
    
 print Err/50247/6
 print Err_unrel/np.sum(R<Rel_th)
