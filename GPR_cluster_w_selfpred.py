@@ -95,34 +95,24 @@ kernel_gpml = 66.0**2 * RBF(length_scale=67.0)+ 0.18**2 * RBF(length_scale=0.134
 
 
 
-M_train_rel   = cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_M'][12:30,:].T
-K_train_rel   = cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30,:].T
+M_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_M'][12:30,:].T
+K_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30,:].T # normalize later 
 
-K_test_rel    = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_rel    =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
-K_test_unrel  = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_unrel  =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
-R_test_unrel  =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
+K_test_rel    = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
+M_test_rel    =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
 
-M             = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T-MIN)/(MAX-MIN) 
-K             = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
-R             =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
+K_test_unrel  = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
+M_test_unrel  =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
+R_test_unrel  =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
+
+M             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T 
+K             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
+R             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
 
 Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
-Rel_mtx = np.zeros(Rmtx.shape)
-Rel_mtx[:] = Rmtx
-Rel_mtx[Rmtx>Rel_th] = 1
-tmpidx = np.where(np.sum(Rel_mtx,0)==0)[0]
-Rel_mtx[:,tmpidx]=1
-
-
 
 Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),np.arange(0,12,2),R_test_unrel,0)
-Rel_mtx_test_unrel = np.zeros(Rmtx_test_unrel.shape)
-Rel_mtx_test_unrel[:] = Rmtx_test_unrel
-Rel_mtx_test_unrel[Rmtx_test_unrel>Rel_th] = 1
-#tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
-#Rel_mtx_test_unrel[:,tmpidx]=1
+
 
        
 M_rel = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
@@ -137,9 +127,9 @@ Err['all']={}
 Err['unrel']={}
 Err['test_rel']={}
 Err['test_unrel']={}
+Err['test_err'] ={}
 
-
-for ncluster in range(200,1100,100):
+for ncluster in range(200,3100,100):
 
     # Cluster of Mocap Data
     print('Mocap Clustering(',ncluster,')')
@@ -178,9 +168,7 @@ for ncluster in range(200,1100,100):
 
     y_pred  = gp_pred(K,centroids_K,gp)
 
-
-
-        
+       
     data     = (y_pred*(MAX-MIN)+MIN).T  
     uni_data = np.zeros(data.shape)   
     univec   = uni_vec(data)
@@ -231,34 +219,54 @@ for ncluster in range(200,1100,100):
     uni_data_test_unrel[6:9  ,:] = data_test_unrel[3:6  ,:]+univec_test_unrel[3:6  ,:]*27.1*factor
     uni_data_test_unrel[12:15,:] = data_test_unrel[9:12 ,:]+univec_test_unrel[9:12 ,:]*33.2*factor
     uni_data_test_unrel[15:  ,:] = data_test_unrel[12:15,:]+univec_test_unrel[12:15,:]*27.1*factor
+    
+    # === K_test ===
+    
+#    y_test_unrel        = gp.predict(K_test_unrel)
+
+    K_test        = np.vstack([K_test_rel,K_test_unrel])
+    M_test        = np.vstack([M_test_rel,M_test_unrel])
+    y_test        = gp_pred(K_test,centroids_K,gp)
+                           
+    data_test     = (y_test*(MAX-MIN)+MIN).T
+    uni_data_test = np.zeros(data_test.shape)
+    univec_test   = uni_vec(data_test)
+    
+    uni_data_test[0:3  ,:] = data_test[0:3  ,:]
+    uni_data_test[9:12 ,:] = data_test[9:12 ,:]
+
+    uni_data_test[3:6  ,:] = data_test[0:3  ,:]+univec_test[0:3  ,:]*33.2*factor
+    uni_data_test[6:9  ,:] = data_test[3:6  ,:]+univec_test[3:6  ,:]*27.1*factor
+    uni_data_test[12:15,:] = data_test[9:12 ,:]+univec_test[9:12 ,:]*33.2*factor
+    uni_data_test[15:  ,:] = data_test[12:15,:]+univec_test[12:15,:]*27.1*factor
 
 
 
 
-    err = np.sum(np.sum((((M.T*(MAX-MIN)+MIN)-uni_data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
-    err_unrel = np.sum(np.sum(((((M.T*(MAX-MIN)+MIN)-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
+    err            = np.sum(np.sum(((M.T-uni_data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
+    err_unrel      = np.sum(np.sum((((M.T-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
 
-    err_test_rel = np.sum(np.sum(((M_test_rel.T-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/5651/6 
+    err_test_rel   = np.sum(np.sum(((M_test_rel.T-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/K_test_rel.shape[0]/6 
     err_test_unrel = np.sum(np.sum( (((M_test_unrel.T-uni_data_test_unrel)*(Rmtx_test_unrel<Rel_th))\
                                     .reshape(-1,3,M_test_unrel.shape[0]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
 
-
+    err_test       = np.sum(np.sum(((M_test.T-uni_data_test).reshape(-1,3,M_test.shape[0]))**2,axis=1)**0.5)/K_test.shape[0]/6 
 
     
-    Err['all'][ncluster] = err
-    Err['unrel'][ncluster] = err_unrel
-    Err['test_rel'][ncluster] = err_test_rel
+    Err['all'][ncluster]        = err
+    Err['unrel'][ncluster]      = err_unrel
+    Err['test_rel'][ncluster]   = err_test_rel
     Err['test_unrel'][ncluster] = err_test_unrel    
+    Err['test_err'][ncluster]   = err_test
     
-    
-    print('Err=',err)
-    print('Err_unrel=',err_unrel)
-    print('Err_test_rel=',err_test_rel)
+    print('Err='           ,err)
+    print('Err_unrel='     ,err_unrel)
+    print('Err_test_rel='  ,err_test_rel)
     print('Err_test_unrel=',err_test_unrel)
-
+    print('Err_test ='     ,err_test)
 
     
-    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_Rand_old.pkl'
+    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_Rand.pkl'
 
 
     cPickle.dump(Err,open(fname,'wb'))
@@ -266,33 +274,35 @@ for ncluster in range(200,1100,100):
 #=====================
 #import matplotlib.pyplot as plt
 #
-#Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000.pkl','rb'))
-#Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_bRel.pkl','rb'))
-#Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_oriRel.pkl','rb'))
-#Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
+#Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand.pkl','rb'))
+#Err_old         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand_old.pkl','rb'))
+##Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_bRel.pkl','rb'))
+##Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_oriRel.pkl','rb'))
+##Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
 #
 #
 #
-#for idx,Key in enumerate(['all','test_unrel','unrel']):
+#for idx,Key in enumerate(['all','test_unrel','unrel','test_rel','test_err']):
 #    err         = []
 #    err_brel    = []
 #    err_orirel  = []
 #    err_combrel = []
 #    for i in range(200,1100,100):
 #        err.append(Err[Key][i])
-#        err_brel.append(Err_brel[Key][i])
-#        err_orirel.append(Err_orirel[Key][i]) 
-#        err_combrel.append(Err_combrel[Key][i])
+#        err_brel.append(Err_old[Key][i])
+##        err_brel.append(Err_brel[Key][i])
+##        err_orirel.append(Err_orirel[Key][i]) 
+##        err_combrel.append(Err_combrel[Key][i])
 #    
 #    plt.figure(idx+1)    
 #    plt.title('GPR cluster('+Key+')')
 #    plt.xlabel('cluster number')
 #    plt.ylabel('err (pixel per joint)')   
-#    plt.plot(range(200,1100,100),err        ,color = 'blue'  , label = 'no weighted')  
-#    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'binary weighted')
-#    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
-#    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
-#    
+#    plt.plot(range(200,1100,100),err        ,color = 'red'  , label = 'new reliability')  
+#    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'old reliability')
+##    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
+##    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
+##    
 #    plt.legend( loc=1)
 #    plt.draw()
 #    plt.show()
