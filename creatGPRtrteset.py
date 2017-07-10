@@ -112,7 +112,7 @@ dataset['unRel_test_R' ] = unRel_R[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
 dataset['Rel_sidx']   = relidx
 dataset['unRel_sidx'] = unrelidx
 
-dataset['Mdata']
+dataset['Mdata'] = M
 dataset['Kdata'] = K
 dataset['Rdata'] = R
 
