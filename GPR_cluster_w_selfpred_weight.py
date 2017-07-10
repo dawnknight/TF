@@ -123,19 +123,19 @@ R             = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['R
 
 Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
 Rel_mtx = np.zeros(Rmtx.shape)
-Rel_mtx[:] = Rmtx
+#Rel_mtx[:] = Rmtx
 Rel_mtx[Rmtx>Rel_th] = 1
-tmpidx = np.where(np.sum(Rel_mtx,0)==0)[0]
-Rel_mtx[:,tmpidx]=1
+#tmpidx = np.where(np.sum(Rel_mtx,0)==0)[0]
+#Rel_mtx[:,tmpidx]=1
 
 
 
 Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),np.arange(0,12,2),R_test_unrel,0)
 Rel_mtx_test_unrel = np.zeros(Rmtx_test_unrel.shape)
-Rel_mtx_test_unrel[:] = Rmtx_test_unrel
+#Rel_mtx_test_unrel[:] = Rmtx_test_unrel
 Rel_mtx_test_unrel[Rmtx_test_unrel>Rel_th] = 1
-tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
-Rel_mtx_test_unrel[:,tmpidx]=1
+#tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
+#Rel_mtx_test_unrel[:,tmpidx]=1
 
        
 M_rel = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
@@ -150,7 +150,7 @@ Err['all']={}
 Err['unrel']={}
 Err['test_rel']={}
 Err['test_unrel']={}
-
+Err['test_err']={}
 
 for ncluster in range(200,1100,100):
 
@@ -289,44 +289,44 @@ for ncluster in range(200,1100,100):
     print('Err_test ='     ,err_test)
 
     
-    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_w_comb_Rel.pkl'
+    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_w_b_Rel.pkl'
 
 
     cPickle.dump(Err,open(fname,'wb'))
 
 ##=====================
-#import matplotlib.pyplot as plt
-#
-#Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000.pkl','rb'))
-#Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_bRel.pkl','rb'))
-#Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_oriRel.pkl','rb'))
-#Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
-#
-#
-#
-#for idx,Key in enumerate(['all','test_unrel','unrel']):
-#    err         = []
-#    err_brel    = []
-#    err_orirel  = []
-#    err_combrel = []
-#    for i in range(200,1100,100):
-#        err.append(Err[Key][i])
-#        err_brel.append(Err_brel[Key][i])
-#        err_orirel.append(Err_orirel[Key][i]) 
-#        err_combrel.append(Err_combrel[Key][i])
-#    
-#    plt.figure(idx+1)    
-#    plt.title('GPR cluster('+Key+')')
-#    plt.xlabel('cluster number')
-#    plt.ylabel('err (pixel per joint)')   
-#    plt.plot(range(200,1100,100),err        ,color = 'blue'  , label = 'no weighted')  
-#    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'binary weighted')
-#    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
-#    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
-#    
-#    plt.legend( loc=1)
-#    plt.draw()
-#    plt.show()
+import matplotlib.pyplot as plt
+
+Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand.pkl','rb'))
+Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_b_Rel.pkl','rb'))
+Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_ori_Rel.pkl','rb'))
+Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
+
+
+
+for idx,Key in enumerate(['all','test_unrel','unrel','test_err']):
+    err         = []
+    err_brel    = []
+    err_orirel  = []
+    err_combrel = []
+    for i in range(200,1100,100):
+        err.append(Err[Key][i])
+        err_brel.append(Err_brel[Key][i])
+        err_orirel.append(Err_orirel[Key][i]) 
+        err_combrel.append(Err_combrel[Key][i])
+    
+    plt.figure(idx+1)    
+    plt.title('GPR cluster('+Key+')')
+    plt.xlabel('cluster number')
+    plt.ylabel('err (pixel per joint)')   
+    plt.plot(range(200,1100,100),err        ,color = 'blue'  , label = 'no weighted')  
+    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'binary weighted')
+    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
+    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
+    
+    plt.legend( loc=1)
+    plt.draw()
+    plt.show()
 
 
 
