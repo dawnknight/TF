@@ -272,40 +272,40 @@ for ncluster in range(200,3100,100):
     cPickle.dump(Err,open(fname,'wb'))
 
 #=====================
-#import matplotlib.pyplot as plt
-#
-#Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand.pkl','rb'))
-#Err_old         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand_old.pkl','rb'))
-##Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_bRel.pkl','rb'))
-##Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_oriRel.pkl','rb'))
-##Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
-#
-#
-#
-#for idx,Key in enumerate(['all','test_unrel','unrel','test_rel','test_err']):
-#    err         = []
-#    err_brel    = []
-#    err_orirel  = []
-#    err_combrel = []
-#    for i in range(200,1100,100):
-#        err.append(Err[Key][i])
-#        err_brel.append(Err_old[Key][i])
-##        err_brel.append(Err_brel[Key][i])
-##        err_orirel.append(Err_orirel[Key][i]) 
-##        err_combrel.append(Err_combrel[Key][i])
+import matplotlib.pyplot as plt
+
+Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err02000_Rand.pkl','rb'))
+Err_old         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand_old.pkl','rb'))
+#Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_bRel.pkl','rb'))
+#Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_oriRel.pkl','rb'))
+#Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
+
+
+
+for idx,Key in enumerate(['all','test_unrel','unrel','test_rel','test_err']):
+    err         = []
+    err_brel    = []
+    err_orirel  = []
+    err_combrel = []
+    for i in range(200,2100,100):
+        err.append(Err[Key][i])
+        err_brel.append(Err_old[Key][i])
+#        err_brel.append(Err_brel[Key][i])
+#        err_orirel.append(Err_orirel[Key][i]) 
+#        err_combrel.append(Err_combrel[Key][i])
+    
+    plt.figure(idx+1)    
+    plt.title('GPR cluster('+Key+')')
+    plt.xlabel('cluster number')
+    plt.ylabel('err (pixel per joint)')   
+    plt.plot(range(200,2100,100),err        ,color = 'red'  , label = 'new reliability')  
+    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'old reliability')
+#    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
+#    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
 #    
-#    plt.figure(idx+1)    
-#    plt.title('GPR cluster('+Key+')')
-#    plt.xlabel('cluster number')
-#    plt.ylabel('err (pixel per joint)')   
-#    plt.plot(range(200,1100,100),err        ,color = 'red'  , label = 'new reliability')  
-#    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'old reliability')
-##    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
-##    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
-##    
-#    plt.legend( loc=1)
-#    plt.draw()
-#    plt.show()
+    plt.legend( loc=1)
+    plt.draw()
+    plt.show()
 
 
 

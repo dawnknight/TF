@@ -117,7 +117,7 @@ K_test_unrel  = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['
 M_test_unrel  = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
 R_test_unrel  = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
 
-M             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T-MIN)/(MAX-MIN) 
+M             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T
 K             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
 R             = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
 
@@ -134,8 +134,8 @@ Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),n
 Rel_mtx_test_unrel = np.zeros(Rmtx_test_unrel.shape)
 Rel_mtx_test_unrel[:] = Rmtx_test_unrel
 Rel_mtx_test_unrel[Rmtx_test_unrel>Rel_th] = 1
-#tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
-#Rel_mtx_test_unrel[:,tmpidx]=1
+tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
+Rel_mtx_test_unrel[:,tmpidx]=1
 
        
 M_rel = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
@@ -245,30 +245,48 @@ for ncluster in range(200,1100,100):
     uni_data_test_unrel[12:15,:] = data_test_unrel[9:12 ,:]+univec_test_unrel[9:12 ,:]*33.2*factor
     uni_data_test_unrel[15:  ,:] = data_test_unrel[12:15,:]+univec_test_unrel[12:15,:]*27.1*factor
 
+    # === K_test ===
+    
+#    y_test_unrel        = gp.predict(K_test_unrel)
+
+    K_test        = np.vstack([K_test_rel,K_test_unrel])
+    M_test        = np.vstack([M_test_rel,M_test_unrel])
+    y_test        = gp_pred(K_test,centroids_K,gp)
+                           
+    data_test     = (y_test*(MAX-MIN)+MIN).T
+    uni_data_test = np.zeros(data_test.shape)
+    univec_test   = uni_vec(data_test)
+    
+    uni_data_test[0:3  ,:] = data_test[0:3  ,:]
+    uni_data_test[9:12 ,:] = data_test[9:12 ,:]
+
+    uni_data_test[3:6  ,:] = data_test[0:3  ,:]+univec_test[0:3  ,:]*33.2*factor
+    uni_data_test[6:9  ,:] = data_test[3:6  ,:]+univec_test[3:6  ,:]*27.1*factor
+    uni_data_test[12:15,:] = data_test[9:12 ,:]+univec_test[9:12 ,:]*33.2*factor
+    uni_data_test[15:  ,:] = data_test[12:15,:]+univec_test[12:15,:]*27.1*factor
 
 
-
-    err = np.sum(np.sum((((M.T*(MAX-MIN)+MIN)-uni_data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
-    err_unrel = np.sum(np.sum(((((M.T*(MAX-MIN)+MIN)-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
+    err = np.sum(np.sum(((M.T-uni_data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
+    err_unrel = np.sum(np.sum((((M.T-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
 
 #    err_test_rel = np.sum(np.sum(((M_test_rel.T-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/5651/6 
     err_test_unrel = np.sum(np.sum( (((M_test_unrel.T-uni_data_test_unrel)*(Rmtx_test_unrel<Rel_th))\
                                     .reshape(-1,3,M_test_unrel.shape[0]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
 
-
+    err_test       = np.sum(np.sum(((M_test.T-uni_data_test).reshape(-1,3,M_test.shape[0]))**2,axis=1)**0.5)/K_test.shape[0]/6 
 
     
     Err['all'][ncluster] = err
     Err['unrel'][ncluster] = err_unrel
 #    Err['test_rel'][ncluster] = err_test_rel
     Err['test_unrel'][ncluster] = err_test_unrel    
-    
+    Err['test_err'][ncluster]   = err_test
     
     print('Err=',err)
     print('Err_unrel=',err_unrel)
 #    print('Err_test_rel=',err_test_rel)
     print('Err_test_unrel=',err_test_unrel)
-
+    print('Err_test ='     ,err_test)
 
     
     fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_w_comb_Rel.pkl'
