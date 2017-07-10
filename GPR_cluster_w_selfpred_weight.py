@@ -47,8 +47,11 @@ def cov(sita0,sita1,W1,W2,noise_level,x1,x2,Rel=0):
 #                dists2[i,j] = np.sum(((x1[i,:]-x2[j,:])*Rel[i,:]/W2)**2)
                 
         for i in range(x1.shape[0]):
-            dists1[i,:] = np.sum(((x2-x1[i,:])*Rel[i,:]/W1)**2,axis = 1)
-            dists2[i,:] = np.sum(((x2-x1[i,:])*Rel[i,:]/W2)**2,axis = 1)    
+#            if sum(Rel[i,:])!=18:
+#                pdb.set_trace()
+            factor = 18/sum(Rel[i,:])
+            dists1[i,:] = np.sum(((x2-x1[i,:])*Rel[i,:]*factor/W1)**2,axis = 1)
+            dists2[i,:] = np.sum(((x2-x1[i,:])*Rel[i,:]*factor/W2)**2,axis = 1)    
                 
                 
         
@@ -87,9 +90,9 @@ def gp_pred(testdata,traindata,gp,Rel=0):
 
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 
-src_path  = 'I:/AllData_0327/'
+#src_path  = 'I:/AllData_0327/'
 #src_path  = 'C:/Users/Dawnknight/Documents/GitHub/K_project/data/'
-#src_path  = 'D:/Project/K_project/data/'
+src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
@@ -112,30 +115,30 @@ M_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['R
 K_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30,:].T
 
 K_test_rel    = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_rel    = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
+M_test_rel    =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
 K_test_unrel  = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_unrel  = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
-R_test_unrel  = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
+M_test_unrel  =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
+R_test_unrel  =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
 
 M             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T
 K             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
-R             = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
+R             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
 
 Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
 Rel_mtx = np.zeros(Rmtx.shape)
-#Rel_mtx[:] = Rmtx
+Rel_mtx[:] = Rmtx
 Rel_mtx[Rmtx>Rel_th] = 1
-#tmpidx = np.where(np.sum(Rel_mtx,0)==0)[0]
-#Rel_mtx[:,tmpidx]=1
+tmpidx = np.where(np.sum(Rel_mtx,0)==0)[0]
+Rel_mtx[:,tmpidx]=1
 
 
 
 Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),np.arange(0,12,2),R_test_unrel,0)
 Rel_mtx_test_unrel = np.zeros(Rmtx_test_unrel.shape)
-#Rel_mtx_test_unrel[:] = Rmtx_test_unrel
+Rel_mtx_test_unrel[:] = Rmtx_test_unrel
 Rel_mtx_test_unrel[Rmtx_test_unrel>Rel_th] = 1
-#tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
-#Rel_mtx_test_unrel[:,tmpidx]=1
+tmpidx = np.where(np.sum(Rel_mtx_test_unrel,0)==0)[0]
+Rel_mtx_test_unrel[:,tmpidx]=1
 
        
 M_rel = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
@@ -251,7 +254,8 @@ for ncluster in range(200,1100,100):
 
     K_test        = np.vstack([K_test_rel,K_test_unrel])
     M_test        = np.vstack([M_test_rel,M_test_unrel])
-    y_test        = gp_pred(K_test,centroids_K,gp)
+    R_test        = np.vstack([np.ones(M_test_rel.shape),Rel_mtx_test_unrel.T])
+    y_test        = gp_pred(K_test,centroids_K,gp,R_test)
                            
     data_test     = (y_test*(MAX-MIN)+MIN).T
     uni_data_test = np.zeros(data_test.shape)
@@ -289,7 +293,7 @@ for ncluster in range(200,1100,100):
     print('Err_test ='     ,err_test)
 
     
-    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_w_b_Rel.pkl'
+    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_w_comb_Rel_norm.pkl'
 
 
     cPickle.dump(Err,open(fname,'wb'))
@@ -297,20 +301,23 @@ for ncluster in range(200,1100,100):
 ##=====================
 import matplotlib.pyplot as plt
 
-Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand.pkl','rb'))
-Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_b_Rel.pkl','rb'))
-Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_ori_Rel.pkl','rb'))
-Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
+#src_path  = 'I:/AllData_0327/'
+#src_path  = 'D:/Project/K_project/data/'
+
+#Err         = cPickle.load(file(src_path +'GPR_cluster_err/Err01000_Rand.pkl','rb'))
+Err_brel    = cPickle.load(file(src_path +'GPR_cluster_err/Err01000_w_b_Rel_norm.pkl','rb'))
+Err_orirel  = cPickle.load(file(src_path +'GPR_cluster_err/Err01000_w_ori_Rel_norm.pkl','rb'))
+Err_combrel = cPickle.load(file(src_path +'GPR_cluster_err/Err01000_w_comb_Rel_norm.pkl','rb'))
 
 
 
 for idx,Key in enumerate(['all','test_unrel','unrel','test_err']):
-    err         = []
+#    err         = []
     err_brel    = []
     err_orirel  = []
     err_combrel = []
     for i in range(200,1100,100):
-        err.append(Err[Key][i])
+#        err.append(Err[Key][i])
         err_brel.append(Err_brel[Key][i])
         err_orirel.append(Err_orirel[Key][i]) 
         err_combrel.append(Err_combrel[Key][i])
@@ -319,7 +326,7 @@ for idx,Key in enumerate(['all','test_unrel','unrel','test_err']):
     plt.title('GPR cluster('+Key+')')
     plt.xlabel('cluster number')
     plt.ylabel('err (pixel per joint)')   
-    plt.plot(range(200,1100,100),err        ,color = 'blue'  , label = 'no weighted')  
+#    plt.plot(range(200,1100,100),err        ,color = 'blue'  , label = 'no weighted')  
     plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'binary weighted')
     plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
     plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')

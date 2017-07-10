@@ -56,7 +56,8 @@ def gp_pred(testdata,traindata,gp):
     W1    = parameter["k1__k1__k2__length_scale"]
     sita1 = parameter["k1__k2__k1__constant_value"]
     W2    = parameter["k1__k2__k2__length_scale"]
-    noise_level = parameter["k2__noise_level"]    
+    noise_level = parameter["k2__noise_level"] 
+    traindata = gp.X_train_
 
 #    L_    = gp.L_
 #    L_inv = np.linalg.inv(L_)
