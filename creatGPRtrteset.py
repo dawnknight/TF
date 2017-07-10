@@ -14,8 +14,8 @@ import cPickle,glob,os
 import numpy as np
 from random import shuffle as sf
 
-#src_path  = 'D:/Project/K_project/data/'
-src_path  = 'I:/AllData_0327/'
+src_path  = 'D:/Project/K_project/data/'
+#src_path  = 'I:/AllData_0327/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
