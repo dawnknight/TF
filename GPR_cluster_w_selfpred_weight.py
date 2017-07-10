@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jul 07 10:47:24 2017
+Created on Mon Jul 10 00:04:59 2017
 
 @author: Dawnknight
 """
+
 
 
 
@@ -33,11 +34,23 @@ def uni_vec(Body):
 
     return vec/vlen
 
-def cov(sita0,sita1,W1,W2,noise_level,x1,x2):
-    
-    dists1 = cdist(x1 / W1, x2 / W1,metric='sqeuclidean')
-    dists2 = cdist(x1 / W2, x2 / W2,metric='sqeuclidean')
-       
+def cov(sita0,sita1,W1,W2,noise_level,x1,x2,Rel=0):
+    if type(Rel) == int:
+        dists1 = cdist(x1 / W1, x2 / W1,metric='sqeuclidean')
+        dists2 = cdist(x1 / W2, x2 / W2,metric='sqeuclidean')
+    else:
+        dists1 = np.zeros((x1.shape[0],x2.shape[0]))
+        dists2 = np.zeros((x1.shape[0],x2.shape[0]))
+#        for i in range(x1.shape[0]):
+#            for j in range(x2.shape[0]):
+#                dists1[i,j] = np.sum(((x1[i,:]-x2[j,:])*Rel[i,:]/W1)**2)
+#                dists2[i,j] = np.sum(((x1[i,:]-x2[j,:])*Rel[i,:]/W2)**2)
+                
+        for i in range(x1.shape[0]):
+            dists1[i,:] = np.sum(((x2-x1[i,:])*Rel[i,:]/W1)**2,axis = 1)
+            dists2[i,:] = np.sum(((x2-x1[i,:])*Rel[i,:]/W2)**2,axis = 1)    
+                
+                
         
     k1=np.exp(-.5 * dists1) 
     k2=np.exp(-.5 * dists2)
@@ -48,7 +61,7 @@ def cov(sita0,sita1,W1,W2,noise_level,x1,x2):
 
 
 
-def gp_pred(testdata,traindata,gp):
+def gp_pred(testdata,traindata,gp,Rel=0):
     
     #===== find the parameter of gp =====
     parameter=gp.kernel_.get_params(deep=True)
@@ -64,7 +77,7 @@ def gp_pred(testdata,traindata,gp):
     y_train_mean = gp.y_train_mean
     
     #===== Prediction ======
-    K_trans = cov(sita0,sita1,W1,W2,noise_level,testdata,traindata)    
+    K_trans = cov(sita0,sita1,W1,W2,noise_level,testdata,traindata,Rel)    
 #    k1      = cov(sita0,sita1,W1,W2,noise_level,testdata,testdata)    
 #    v       = np.dot(L_inv,K_trans.T)             
 #    y_cov   = k1-K_trans.dot(v)
@@ -95,18 +108,18 @@ kernel_gpml = 66.0**2 * RBF(length_scale=67.0)+ 0.18**2 * RBF(length_scale=0.134
 
 
 
-M_train_rel   = cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_M'][12:30,:].T
-K_train_rel   = cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30,:].T
+M_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_M'][12:30,:].T
+K_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30,:].T
 
-K_test_rel    = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_rel    =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
-K_test_unrel  = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_unrel  =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
-R_test_unrel  =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
+K_test_rel    = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
+M_test_rel    = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
+K_test_unrel  = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
+M_test_unrel  = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
+R_test_unrel  = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
 
-M             = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T-MIN)/(MAX-MIN) 
-K             = (cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
-R             =  cPickle.load(file('old_GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
+M             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T-MIN)/(MAX-MIN) 
+K             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
+R             = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
 
 Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
 Rel_mtx = np.zeros(Rmtx.shape)
@@ -176,7 +189,7 @@ for ncluster in range(200,1100,100):
 #    y_pred  = gp.predict(K)
 
 
-    y_pred  = gp_pred(K,centroids_K,gp)
+    y_pred  = gp_pred(K,centroids_K,gp,Rel_mtx.T)
 
 
 
@@ -200,25 +213,25 @@ for ncluster in range(200,1100,100):
     
     # === K_test_rel ===
     
-#    y_test_rel        = gp.predict(K_test_rel)
-    y_test_rel        = gp_pred(K_test_rel,centroids_K,gp)
-                  
-    data_test_rel     = (y_test_rel*(MAX-MIN)+MIN).T
-    uni_data_test_rel = np.zeros(data_test_rel.shape)
-    univec_test_rel   = uni_vec(data_test_rel)
-    
-    uni_data_test_rel[0:3  ,:] = data_test_rel[0:3  ,:]
-    uni_data_test_rel[9:12 ,:] = data_test_rel[9:12 ,:]
-
-    uni_data_test_rel[3:6  ,:] = data_test_rel[0:3  ,:]+univec_test_rel[0:3  ,:]*33.2*factor
-    uni_data_test_rel[6:9  ,:] = data_test_rel[3:6  ,:]+univec_test_rel[3:6  ,:]*27.1*factor
-    uni_data_test_rel[12:15,:] = data_test_rel[9:12 ,:]+univec_test_rel[9:12 ,:]*33.2*factor
-    uni_data_test_rel[15:  ,:] = data_test_rel[12:15,:]+univec_test_rel[12:15,:]*27.1*factor
+##    y_test_rel        = gp.predict(K_test_rel)
+#    y_test_rel        = gp_pred(K_test_rel,centroids_K,gp)
+#                  
+#    data_test_rel     = (y_test_rel*(MAX-MIN)+MIN).T
+#    uni_data_test_rel = np.zeros(data_test_rel.shape)
+#    univec_test_rel   = uni_vec(data_test_rel)
+#    
+#    uni_data_test_rel[0:3  ,:] = data_test_rel[0:3  ,:]
+#    uni_data_test_rel[9:12 ,:] = data_test_rel[9:12 ,:]
+#
+#    uni_data_test_rel[3:6  ,:] = data_test_rel[0:3  ,:]+univec_test_rel[0:3  ,:]*33.2*factor
+#    uni_data_test_rel[6:9  ,:] = data_test_rel[3:6  ,:]+univec_test_rel[3:6  ,:]*27.1*factor
+#    uni_data_test_rel[12:15,:] = data_test_rel[9:12 ,:]+univec_test_rel[9:12 ,:]*33.2*factor
+#    uni_data_test_rel[15:  ,:] = data_test_rel[12:15,:]+univec_test_rel[12:15,:]*27.1*factor
 
     # === K_test_unrel ===
     
 #    y_test_unrel        = gp.predict(K_test_unrel)
-    y_test_unrel        = gp_pred(K_test_unrel,centroids_K,gp)
+    y_test_unrel        = gp_pred(K_test_unrel,centroids_K,gp,Rel_mtx_test_unrel.T)
                            
     data_test_unrel     = (y_test_unrel*(MAX-MIN)+MIN).T
     uni_data_test_unrel = np.zeros(data_test_unrel.shape)
@@ -238,7 +251,7 @@ for ncluster in range(200,1100,100):
     err = np.sum(np.sum((((M.T*(MAX-MIN)+MIN)-uni_data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
     err_unrel = np.sum(np.sum(((((M.T*(MAX-MIN)+MIN)-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
 
-    err_test_rel = np.sum(np.sum(((M_test_rel.T-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/5651/6 
+#    err_test_rel = np.sum(np.sum(((M_test_rel.T-uni_data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/5651/6 
     err_test_unrel = np.sum(np.sum( (((M_test_unrel.T-uni_data_test_unrel)*(Rmtx_test_unrel<Rel_th))\
                                     .reshape(-1,3,M_test_unrel.shape[0]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
 
@@ -247,23 +260,23 @@ for ncluster in range(200,1100,100):
     
     Err['all'][ncluster] = err
     Err['unrel'][ncluster] = err_unrel
-    Err['test_rel'][ncluster] = err_test_rel
+#    Err['test_rel'][ncluster] = err_test_rel
     Err['test_unrel'][ncluster] = err_test_unrel    
     
     
     print('Err=',err)
     print('Err_unrel=',err_unrel)
-    print('Err_test_rel=',err_test_rel)
+#    print('Err_test_rel=',err_test_rel)
     print('Err_test_unrel=',err_test_unrel)
 
 
     
-    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_Rand_old.pkl'
+    fname = src_path+Errfolder+'Err'+repr(ncluster).zfill(5)+'_w_comb_Rel.pkl'
 
 
     cPickle.dump(Err,open(fname,'wb'))
 
-#=====================
+##=====================
 #import matplotlib.pyplot as plt
 #
 #Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000.pkl','rb'))

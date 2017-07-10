@@ -58,8 +58,8 @@ for idx,(Kfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Kfo
         
         
         
-relidx = np.where(np.sum((R<Rel_th)*1,0)==0)[0]   # frames which have all joints reliable
-unrelidx = np.where(np.sum((R>Rel_th)*1,0)!=6)[0] 
+relidx   = np.where(np.sum((R<Rel_th)*1,0)==0)[0]   # frames which have all joints reliable
+unrelidx = np.where(np.sum((R<Rel_th)*1,0)!=0)[0]
 
 
 
@@ -112,7 +112,7 @@ dataset['unRel_test_R' ] = unRel_R[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
 dataset['Rel_sidx']   = relidx
 dataset['unRel_sidx'] = unrelidx
 
-dataset['Mdata'] = M
+dataset['Mdata']
 dataset['Kdata'] = K
 dataset['Rdata'] = R
 
