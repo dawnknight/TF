@@ -75,9 +75,9 @@ def gp_pred(testdata,traindata,gp):
 
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 
-src_path  = 'I:/AllData_0327/'
+#src_path  = 'I:/AllData_0327/'
 #src_path  = 'C:/Users/Dawnknight/Documents/GitHub/K_project/data/'
-#src_path  = 'D:/Project/K_project/data/'
+src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
@@ -130,7 +130,7 @@ Err['test_rel']={}
 Err['test_unrel']={}
 Err['test_err'] ={}
 
-for ncluster in range(200,3100,100):
+for ncluster in range(200,4100,100):
 
     # Cluster of Mocap Data
     print('Mocap Clustering(',ncluster,')')
@@ -275,22 +275,22 @@ for ncluster in range(200,3100,100):
 #=====================
 import matplotlib.pyplot as plt
 
-Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err02000_Rand.pkl','rb'))
-Err_old         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand_old.pkl','rb'))
+Err         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err04000_Rand.pkl','rb'))
+#Err_old         = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_Rand_old.pkl','rb'))
 #Err_brel    = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_bRel.pkl','rb'))
 #Err_orirel  = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_oriRel.pkl','rb'))
 #Err_combrel = cPickle.load(file('I:/AllData_0327/GPR_cluster_err/Err01000_w_comb_Rel.pkl','rb'))
 
 
 
-for idx,Key in enumerate(['all','test_unrel','unrel','test_rel','test_err']):
+for idx,Key in enumerate(['all','test_err']):
     err         = []
     err_brel    = []
     err_orirel  = []
     err_combrel = []
-    for i in range(200,2100,100):
+    for i in range(200,4100,100):
         err.append(Err[Key][i])
-        err_brel.append(Err_old[Key][i])
+#        err_brel.append(Err_old[Key][i])
 #        err_brel.append(Err_brel[Key][i])
 #        err_orirel.append(Err_orirel[Key][i]) 
 #        err_combrel.append(Err_combrel[Key][i])
@@ -299,8 +299,8 @@ for idx,Key in enumerate(['all','test_unrel','unrel','test_rel','test_err']):
     plt.title('GPR cluster('+Key+')')
     plt.xlabel('cluster number')
     plt.ylabel('err (pixel per joint)')   
-    plt.plot(range(200,2100,100),err        ,color = 'red'  , label = 'new reliability')  
-    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'old reliability')
+    plt.plot(range(200,4100,100),err        ,color = 'red'  , label = 'new reliability')  
+#    plt.plot(range(200,1100,100),err_brel   ,color = 'green' , label = 'old reliability')
 #    plt.plot(range(200,1100,100),err_orirel ,color = 'red'   , label = 'original weighted')
 #    plt.plot(range(200,1100,100),err_combrel,color = 'black' , label = 'combine weighted')
 #    

@@ -110,8 +110,8 @@ dataset['unRel_test_K' ] = unRel_K[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
 dataset['unRel_train_R'] = unRel_R[:,unRel_sidx[:int(len(unRel_sidx)*0.8) ]]
 dataset['unRel_test_R' ] = unRel_R[:,unRel_sidx[ int(len(unRel_sidx)*0.8):]]
 
-dataset['Rel_sidx']   = relidx
-dataset['unRel_sidx'] = unrelidx
+dataset['Rel_sidx']   = Rel_sidx
+dataset['unRel_sidx'] = unRel_sidx
 
 dataset['Mdata'] = M
 dataset['Kdata'] = K

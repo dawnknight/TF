@@ -17,14 +17,14 @@ from sklearn.externals import joblib
 from scipy.spatial.distance import  cdist
 
 
-#src_path  = 'I:/AllData_0327/'
-src_path  = 'D:/Project/K_project/data/'
+src_path  = 'I:/AllData_0327/'
+#src_path  = 'D:/Project/K_project/data/'
 #Mfolder   = 'unified data array/Unified_MData/'
 #Infolder  = 'unified data array/Unified_KData/'
 Infolder  = 'GPRresult/K2M_800/'
 #Rfolder   = 'unified data array/reliability/'
 gprfolder = 'GPR_Kernel/'
-dstfolder = 'GPRresult/K2M_800/'
+dstfolder = 'GPRresult/K2M_M2K_800/'
 
 Rel_th    = 0.7
 factor    = 5
@@ -99,10 +99,10 @@ for Infile in glob.glob(os.path.join(src_path+Infolder,'*.'+Type)):
     
     if Type =='pkl':
         Indata  = (cPickle.load(file(Infile,'rb'))[12:30,:]-MIN)/(MAX-MIN)
-        fname = src_path+dstfolder+Infile.split('\\')[-1][:-4]+'_unified.h5'
+        fname = src_path+dstfolder+Infile.split('\\')[-1][:-4]+'.h5'
     else:       
         Indata  = (h5py.File(Infile,'r')['data'][:] -MIN)/(MAX-MIN)
-        fname = src_path+dstfolder+Infile.split('\\')[-1][:-3]+'_unified.h5'
+        fname = src_path+dstfolder+Infile.split('\\')[-1][:-3]+'.h5'
         
 #    GPR_result = gp.predict(Indata.T)
     GPR_result = gp_pred(Indata.T,gp)

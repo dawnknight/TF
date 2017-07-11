@@ -6,15 +6,13 @@ Created on Mon Jul 10 14:44:17 2017
 """
 
 
-import h5py,glob,os,pdb
+import h5py
 import numpy as np
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels \
-    import RBF, WhiteKernel, RationalQuadratic, ExpSineSquared
-from sklearn.datasets import fetch_mldata
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel
+
 from sklearn.cluster import KMeans
-from sklearn.metrics import pairwise_distances_argmin
-from sklearn.utils import shuffle
+
 try :
     import cPickle
 except:
@@ -73,8 +71,8 @@ def gp_pred(testdata,traindata,gp):
 
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 #
-#src_path  = 'I:/AllData_0327/'
-src_path  = 'D:/Project/K_project/data/'
+src_path  = 'I:/AllData_0327/'
+#src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
@@ -109,8 +107,8 @@ Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),n
 
 
        
-M_rel = (M_train_rel[:15000,:] -MIN)/(MAX-MIN) 
-K_rel = (K_train_rel[:15000,:] -MIN)/(MAX-MIN) 
+M_rel = (M_train_rel -MIN)/(MAX-MIN) 
+K_rel = (K_train_rel -MIN)/(MAX-MIN) 
 
 #M_rel  =  M.T[relidx ,:]
 #Mp_rel =  Mp.T[relidx,:]
