@@ -34,11 +34,11 @@ def uni_vec(Body):
 
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 
-src_path  = 'I:/AllData_0327/'
+#src_path  = 'I:/AllData_0327/'
 #src_path  = 'C:/Users/Dawnknight/Documents/GitHub/K_project/data/'
-#src_path  = 'D:/Project/K_project/data/'
+src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
-Kfolder  = 'unified data array/Unified_KData/'
+Kfolder   = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
 gprfolder = 'GPR_Kernel/'
 Errfolder = 'GPR_cluster_err/'
@@ -87,7 +87,7 @@ Err['test_rel']={}
 Err['test_unrel']={}
 
 
-for ncluster in range(5100,7100,100):
+for ncluster in range(200,6000,100):
 
     # Cluster of Mocap Data
     print('Mocap Clustering(',ncluster,')')

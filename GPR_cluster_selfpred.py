@@ -73,37 +73,20 @@ def gp_pred(testdata,traindata,gp):
 #
 src_path  = 'I:/AllData_0327/'
 #src_path  = 'D:/Project/K_project/data/'
-Mfolder   = 'unified data array/Unified_MData/'
-Kfolder  = 'unified data array/Unified_KData/'
-Rfolder   = 'unified data array/reliability/'
-gprfolder = 'GPR_Kernel/'
-dstfolder = 'GPRresult/K2M_800/'
 
-Rel_th    =  0.7
-factor    =  5
+
+gprfolder = 'GPR_Kernel/'
+
+
 
 
 kernel_gpml = 66.0**2 * RBF(length_scale=67.0)+ 0.18**2 * RBF(length_scale=0.134) + WhiteKernel(noise_level=0.19**2)
 
 
 
-M_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_M'][12:30,:].T
-K_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_train_K'][12:30,:].T # normalize later 
+M_train_rel   = cPickle.load(file('GPR_Kprime2M_Randset.pkl','rb'))['Rel_train_Trg'][12:30,:].T
+K_train_rel   = cPickle.load(file('GPR_Kprime2M_Randset.pkl','rb'))['Rel_train_In'].T # normalize later 
 
-K_test_rel    = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_rel    =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rel_test_M'][12:30,:].T
-
-K_test_unrel  = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_K'][12:30,:].T-MIN)/(MAX-MIN) 
-M_test_unrel  =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_M'][12:30,:].T 
-R_test_unrel  =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['unRel_test_R'][4:10,:]
-
-M             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Mdata'][12:30,:].T 
-K             = (cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Kdata'][12:30,:].T-MIN)/(MAX-MIN) 
-R             =  cPickle.load(file('GPR_training_testing_RANDset33.pkl','rb'))['Rdata'][4:10,:] 
-
-Rmtx = np.insert(np.insert(R,np.arange(6),R,0),np.arange(0,12,2),R,0)
-
-Rmtx_test_unrel =np.insert(np.insert(R_test_unrel,np.arange(6),R_test_unrel,0),np.arange(0,12,2),R_test_unrel,0)
 
 
        
@@ -150,7 +133,7 @@ print('Training')
 gp.fit(centroids_K, centroids_M)
 #gp.fit(centroids_M, centroids_K)
 
-joblib.dump(gp,src_path+gprfolder+'GPR_K2M_cluster_'+repr(ncluster)+'.pkl')
+joblib.dump(gp,src_path+gprfolder+'GPR_Kprime2M_cluster_'+repr(ncluster)+'.pkl')
 
 
 

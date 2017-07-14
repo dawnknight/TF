@@ -21,10 +21,9 @@ src_path  = 'I:/AllData_0327/'
 #src_path  = 'D:/Project/K_project/data/'
 #Mfolder   = 'unified data array/Unified_MData/'
 #Infolder  = 'unified data array/Unified_KData/'
-Infolder  = 'GPRresult/K2M_800/'
-#Rfolder   = 'unified data array/reliability/'
+Infolder  = 'GPRresult/K2Kprime_800/'
 gprfolder = 'GPR_Kernel/'
-dstfolder = 'GPRresult/K2M_M2K_800/'
+dstfolder = 'GPRresult/Kprime2M(K2M)_800/'
 
 Rel_th    = 0.7
 factor    = 5
@@ -86,7 +85,7 @@ def gp_pred(testdata,gp):
 
 
 
-gp = joblib.load(src_path+gprfolder+'GPR_M2K_cluster_800.pkl')
+gp = joblib.load(src_path+gprfolder+'GPR_K2M_cluster_800.pkl')
 
 
 #Type = 'pkl'
