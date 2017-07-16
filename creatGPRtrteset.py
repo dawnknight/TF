@@ -15,19 +15,20 @@ import numpy as np
 from random import shuffle as sf
 
 #src_path  = 'D:/Project/K_project/data/'
-src_path  = 'I:/AllData_0327/'
+src_path  = 'F:/AllData_0327/'
+exeno     = 'ex1'
 Mfolder   = 'unified data array/Unified_MData/'
-Kfolder  = 'unified data array/Unified_KData/'
-Rfolder   = 'unified data array/reliability_mod/'
-#Rfolder   = 'unified data array/reliability/'
+Kfolder   = 'unified data array/Unified_KData/'
+#Rfolder   = 'unified data array/reliability_mod/'
+Rfolder   = 'unified data array/reliability/'
 
 Rel_th = 0.7
 
 dataset={}
 totallen = 0
-for idx,(Kfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Kfolder,'*.pkl')),\
-                                              glob.glob(os.path.join(src_path+Mfolder,'*ex4_FPS30_motion_unified.pkl')),\
-                                              glob.glob(os.path.join(src_path+Rfolder,'*ex4.pkl')))):
+for idx,(Kfile,Mfile,Rfile) in enumerate(zip(glob.glob(os.path.join(src_path+Kfolder+exeno+'/' ,'*'+exeno+'.pkl')),\
+                                             glob.glob(os.path.join(src_path+Mfolder+exeno+'/' ,'*'+exeno+'_FPS30_motion_unified.pkl')),\
+                                             glob.glob(os.path.join(src_path+Rfolder+exeno+'/' ,'*'+exeno+'.pkl')))):
     
     mdata   = cPickle.load(file(Mfile,'rb'))
     rdata   = cPickle.load(file(Rfile,'rb'))
@@ -117,7 +118,7 @@ dataset['Mdata'] = M
 dataset['Kdata'] = K
 dataset['Rdata'] = R
 
-cPickle.dump(dataset,file('GPR_training_testing_RANDset33.pkl','wb'))
+cPickle.dump(dataset,file('old_GPR_training_testing_RANDset33_'+exeno+'.pkl','wb'))
 
 
 
