@@ -71,10 +71,10 @@ def gp_pred(testdata,traindata,gp):
 
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 #
-src_path  = 'I:/AllData_0327/'
+src_path  = 'F:/AllData_0327/'
 #src_path  = 'D:/Project/K_project/data/'
 
-
+exeno = 'ex3'
 gprfolder = 'GPR_Kernel/'
 
 
@@ -84,8 +84,8 @@ kernel_gpml = 66.0**2 * RBF(length_scale=67.0)+ 0.18**2 * RBF(length_scale=0.134
 
 
 
-M_train_rel   = cPickle.load(file('GPR_Kprime2M_Randset.pkl','rb'))['Rel_train_Trg'][12:30,:].T
-K_train_rel   = cPickle.load(file('GPR_Kprime2M_Randset.pkl','rb'))['Rel_train_In'].T # normalize later 
+M_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33_'+exeno+'.pkl','rb'))['Rel_train_M'][12:30,:].T
+K_train_rel   = cPickle.load(file('GPR_training_testing_RANDset33_'+exeno+'.pkl','rb'))['Rel_train_K'][12:30,:].T # normalize later 
 
 
 
@@ -119,7 +119,7 @@ print(time()-t0)
 
 # Align centroids
 centroids_M  = np.zeros((ncluster,18),dtype=np.float64)
-centroids_K = np.zeros((ncluster,18),dtype=np.float64)
+centroids_K  = np.zeros((ncluster,18),dtype=np.float64)
 
 for i in range(0,ncluster):
     centroids_M[i,:]=np.mean(M_rel[labels_M==i,:],axis=0)
@@ -133,7 +133,7 @@ print('Training')
 gp.fit(centroids_K, centroids_M)
 #gp.fit(centroids_M, centroids_K)
 
-joblib.dump(gp,src_path+gprfolder+'GPR_Kprime2M_cluster_'+repr(ncluster)+'.pkl')
+joblib.dump(gp,src_path+gprfolder+exeno+'/GPR_K2M_cluster_'+repr(ncluster)+'_'+exeno+'.pkl')
 
 
 

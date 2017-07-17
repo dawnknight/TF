@@ -17,13 +17,14 @@ from sklearn.externals import joblib
 from scipy.spatial.distance import  cdist
 
 
-src_path  = 'I:/AllData_0327/'
+src_path  = 'F:/AllData_0327/'
 #src_path  = 'D:/Project/K_project/data/'
 #Mfolder   = 'unified data array/Unified_MData/'
-#Infolder  = 'unified data array/Unified_KData/'
-Infolder  = 'GPRresult/K2Kprime_800/'
+exeno     = 'ex3'
+Infolder  = 'unified data array/Unified_KData/'+exeno+'/'
+#Infolder  = 'GPRresult/K2Kprime_800/'
 gprfolder = 'GPR_Kernel/'
-dstfolder = 'GPRresult/Kprime2M(K2M)_800/'
+dstfolder = 'GPRresult/'+exeno+'/K2M_800/'
 
 Rel_th    = 0.7
 factor    = 5
@@ -85,11 +86,11 @@ def gp_pred(testdata,gp):
 
 
 
-gp = joblib.load(src_path+gprfolder+'GPR_K2M_cluster_800.pkl')
+gp = joblib.load(src_path+gprfolder+exeno+'/GPR_K2M_cluster_800_'+exeno+'.pkl')
 
 
-#Type = 'pkl'
-Type = 'h5'
+Type = 'pkl'
+#Type = 'h5'
 
 
     

@@ -33,6 +33,7 @@ def uni_vec(Body):
 
     return vec/vlen
 
+
 def cov(sita0,sita1,W1,W2,noise_level,x1,x2):
     
     dists1 = cdist(x1 / W1, x2 / W1,metric='sqeuclidean')
@@ -87,7 +88,7 @@ Errfolder = 'GPR_cluster_err/'
 Rel_th    =  0.7
 factor    =  5
 
-exeno     = '_ex4'   
+exeno     = '_ex1'   
 
 
 kernel_gpml = 66.0**2 * RBF(length_scale=67.0)+ 0.18**2 * RBF(length_scale=0.134) + WhiteKernel(noise_level=0.19**2)
