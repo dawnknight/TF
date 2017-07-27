@@ -243,7 +243,7 @@ for ncluster in range(800,900,100):
 
     # Align centroids
     centroids_M  = np.zeros((ncluster,21),dtype=np.float64)
-    centroids_K = np.zeros((ncluster,21),dtype=np.float64)
+    centroids_K  = np.zeros((ncluster,21),dtype=np.float64)
 
     for i in range(0,ncluster):
         centroids_M[i,:]=np.mean(M_rel[labels_M==i,:],axis=0)
@@ -296,8 +296,6 @@ for ncluster in range(800,900,100):
 
     
     # === K_test ===
-    
-#    y_test_unrel        = gp.predict(K_test_unrel)
 
     K_test        = np.vstack([K_test_rel ,K_test_unrel])
     M_test        = np.vstack([M_test_rel ,M_test_unrel])
