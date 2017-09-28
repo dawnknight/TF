@@ -138,7 +138,7 @@ def gp_pred(testdata,traindata,gp):
 #
 #    return real_data
 def data2real(data,refK,refM):
-
+    # mapping data from pixel to cm
     refdata  = refK.T
     
     real_data = np.zeros(data.shape)     
@@ -158,9 +158,9 @@ def data2real(data,refK,refM):
     return real_data
 [MIN,MAX] = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 
-src_path  = 'F:/AllData_0327/'
+#src_path  = 'F:/AllData_0327/'
 #src_path  = 'C:/Users/Dawnknight/Documents/GitHub/K_project/data/'
-#src_path  = 'D:/Project/K_project/data/'
+src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
 Rfolder   = 'unified data array/reliability/'
@@ -170,7 +170,7 @@ Errfolder = 'GPR_cluster_err/'
 Rel_th    =  0.7
 factor    =  5
 
-exeno     = '_ex1'
+exeno     = '_ex4'
 feature   = '_meter_fix'   
 
 
