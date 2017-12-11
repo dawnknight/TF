@@ -127,7 +127,7 @@ centroids_K = cPickle.load(file(src_path+gprfolder+'0928/'+'centroids_K_'+repr(n
 
 for infile in glob.glob(os.path.join(src_path+Kfolder,'*.pkl')):
     print infile
-    
+    pdb.set_trace()
     K         = (cPickle.load(file(infile,'rb')).T[:,12:]-MIN)/(MAX-MIN)
     K_pred    = gp_pred(K,centroids_K,gp)
     K_rescale = (K_pred*(MAX-MIN)+MIN).T 
