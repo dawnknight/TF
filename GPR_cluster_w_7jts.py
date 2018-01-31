@@ -251,13 +251,14 @@ for ncluster in range(800,900,100):
 
     # Gaussian Regression
 
-    gp = GaussianProcessRegressor(kernel=kernel_gpml)
+    pdb.set_trace()
+    gp = GaussianProcessRegressor(kernel=kernel_gpml, n_restarts_optimizer=0)
 
     print('Training')
     gp.fit(centroids_K, centroids_M)
 
 
-    joblib.dump(gp,src_path+gprfolder+'kmean/'+'GPR_cluster_'+repr(ncluster)+feature+exeno+'.pkl')
+    joblib.dump(gp,src_path+gprfolder+'kmean/'+'GPR_cluster_'+repr(ncluster)+feature+exeno+'_opt.pkl')
 
 
     print('Predicting')
@@ -373,8 +374,8 @@ for ncluster in range(800,900,100):
     print('Err_test ='     ,jerr_test)    
 
     
-    fname    = src_path+Errfolder+'Err_'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
-    jfname = src_path+Errfolder+'joint_Err'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
+    # fname    = src_path+Errfolder+'Err_'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
+    # jfname = src_path+Errfolder+'joint_Err'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
 
-    cPickle.dump(Err,open(fname,'wb'))
-    cPickle.dump(jErr,open(jfname,'wb'))
+    # cPickle.dump(Err,open(fname,'wb'))
+    # cPickle.dump(jErr,open(jfname,'wb'))
