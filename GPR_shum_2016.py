@@ -167,13 +167,14 @@ def Kmean_cluster(M_rel,K_rel,ncluster,n_cood):
         
     return centroids_M,centroids_K,labels_K
 
-exeno     = '_ex1'
-src_path  = 'F:/AllData_0327/'
-Rfolder   = 'unified data array/reliability/'
+exeno     = '_ex5'
+pre       = 'old_'
+src_path  = 'D:/AllData_0327(0220)/AllData_0327/'
+# Rfolder   = 'unified data array/reliability/'
 gprfolder = 'GPR_Kernel/'
 Errfolder = 'GPR_cluster_err/'
 
-n_cluster = 800
+n_cluster = 30
 Rel_th    = 0.7
 feature   = '_meter_shum_full'
 
@@ -183,7 +184,7 @@ kernel_sep  = 1.0*RBF(length_scale=1.0)+ConstantKernel()+WhiteKernel()
 
 [MIN,MAX]   = h5py.File('./data/CNN/model_CNN_0521_K2M_rel.h5','r')['minmax'][:]
 
-File          = cPickle.load(file('GPR_training_testing_RANDset33_w_raw'+exeno+'.pkl','rb'))
+File          = cPickle.load(file(pre+'GPR_training_testing_RANDset33_w_raw'+exeno+'.pkl','rb'))
 
 M_train_rel   = File['Rel_train_M'][12:,:].T
 K_train_rel   = File['Rel_train_K'][12:,:].T # normalize later 
@@ -307,7 +308,7 @@ for i in xrange(n_cluster):
         
 #    GP[i] = [gp_SL[i],gp_EL[i],gp_WL[i],gp_SR[i],gp_ER[i],gp_WR[i],gp_SP[i]]
 
-joblib.dump(GP,src_path+gprfolder+'kmean/'+'GPR_cluster_'+repr(n_cluster)+feature+exeno+'.pkl')
+joblib.dump(GP,src_path+gprfolder+'kmean/'+pre+'GPR_cluster_'+repr(n_cluster)+feature+exeno+'.pkl')
 
 Err={}
 Err['all']={}
@@ -410,11 +411,13 @@ print('Err_test_unrel=',jerr_test_unrel)
 print('Err_test ='     ,jerr_test)    
 
 
-fname    = src_path+Errfolder+'Err_'+repr(n_cluster).zfill(5)+feature+exeno+'.pkl'
-jfname   = src_path+Errfolder+'joint_Err'+repr(n_cluster).zfill(5)+feature+exeno+'.pkl'
+fname    = src_path+Errfolder+pre+'Err_'+repr(n_cluster).zfill(5)+feature+exeno+'.pkl'
+jfname   = src_path+Errfolder+pre+'joint_Err'+repr(n_cluster).zfill(5)+feature+exeno+'.pkl'
 
 cPickle.dump(Err,open(fname,'wb'))
 cPickle.dump(jErr,open(jfname,'wb'))
+
+print 'pre :' + pre 
 
 
 

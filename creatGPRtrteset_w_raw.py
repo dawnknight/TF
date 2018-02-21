@@ -11,15 +11,15 @@ import cPickle,glob,os
 import numpy as np
 from random import shuffle as sf
 
-#src_path  = 'D:/Project/K_project/data/'
-src_path  = 'F:/AllData_0327/'
-exeno     = 'ex4'
+src_path  = 'D:/AllData_0327(0220)/AllData_0327/'
+# src_path  = 'F:/AllData_0327/'
+exeno     = 'ex5'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder   = 'unified data array/Unified_KData/'
 Kraw      = 'Motion and Kinect raw data/3D_kinect_joint/'
 Mraw      = 'Motion and Kinect raw data/Not_unified_Mdata/'
 Rfolder   = 'unified data array/reliability_mod/'
-#Rfolder   = 'unified data array/reliability/'
+# Rfolder   = 'unified data array/reliability/'
 
 Rel_th = 0.7
 
@@ -38,10 +38,10 @@ for idx,(Kfile,Mfile,Rfile,rKfile,rMfile) in enumerate(zip(glob.glob(os.path.joi
     rmdata  = cPickle.load(file(rMfile,'rb'))
     
 
-    Len     = min(kdata.shape[1],mdata.shape[1])
+    Len     = min(kdata.shape[1], mdata.shape[1])
     totallen += Len 
 
-    dataset[idx]={}
+    dataset[idx] = {}
     dataset[idx]['Kname'] = Kfile
     dataset[idx]['Mname'] = Mfile
     dataset[idx]['Rname'] = Rfile
@@ -125,25 +125,4 @@ dataset['Rdata']  = R
 dataset['rKdata'] = rK
 dataset['rMdata'] = rM
 
-cPickle.dump(dataset,file('GPR_training_testing_RANDset33_w_raw_'+exeno+'.pkl','wb'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-        
-        
-        
+cPickle.dump(dataset,file('GPR_training_testing_RANDset33_w_raw_'+exeno+'.pkl','wb'))      

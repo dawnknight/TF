@@ -163,7 +163,7 @@ def data2real(data,refK,refM):
 src_path  = 'D:/Project/K_project/data/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
-Rfolder   = 'unified data array/reliability/'
+# Rfolder   = 'unified data array/reliability/'
 gprfolder = 'GPR_Kernel/'
 Errfolder = 'GPR_cluster_err/'
 
