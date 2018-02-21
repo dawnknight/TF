@@ -167,7 +167,7 @@ def Kmean_cluster(M_rel,K_rel,ncluster,n_cood):
         
     return centroids_M,centroids_K,labels_K
 
-exeno     = '_ex5'
+exeno     = '_ex7'
 pre       = 'old_'
 src_path  = 'D:/AllData_0327(0220)/AllData_0327/'
 # Rfolder   = 'unified data array/reliability/'

@@ -160,7 +160,7 @@ def data2real(data,refK,refM):
 
 #src_path  = 'F:/AllData_0327/'
 #src_path  = 'C:/Users/Dawnknight/Documents/GitHub/K_project/data/'
-src_path  = 'D:/Project/K_project/data/'
+src_path  = 'D:/AllData_0327(0220)/AllData_0327/'
 Mfolder   = 'unified data array/Unified_MData/'
 Kfolder  = 'unified data array/Unified_KData/'
 # Rfolder   = 'unified data array/reliability/'
@@ -170,7 +170,7 @@ Errfolder = 'GPR_cluster_err/'
 Rel_th    =  0.7
 factor    =  5
 
-exeno     = '_ex4'
+exeno     = '_ex3'
 feature   = '_meter_fix'   
 
 
@@ -228,6 +228,14 @@ jErr['test_rel']={}
 jErr['test_unrel']={}
 jErr['test_err'] ={}
 
+rawErr={}
+rawErr['all']={}
+rawErr['unrel']={}
+rawErr['test_rel']={}
+rawErr['test_unrel']={}
+rawErr['test_err'] ={}
+
+
 for ncluster in range(800,900,100):
 
     # Cluster of Mocap Data
@@ -251,7 +259,7 @@ for ncluster in range(800,900,100):
 
     # Gaussian Regression
 
-    pdb.set_trace()
+    # pdb.set_trace()
     gp = GaussianProcessRegressor(kernel=kernel_gpml, n_restarts_optimizer=0)
 
     print('Training')
@@ -315,7 +323,7 @@ for ncluster in range(800,900,100):
 
     # unified data err
 
-    err            = np.sum(np.sum(((uni_M-uni_data).reshape(-1,3,uni_M.shape[1]))**2,axis=1)**0.5) /50247/6
+    err            = np.sum(np.sum(((uni_M-uni_data).reshape(-1,3,uni_M.shape[1]))**2,axis=1)**0.5) /rK.shape[0]/6
     err_unrel      = np.sum(np.sum((((uni_M-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,uni_M.shape[1]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
 
     err_test_rel   = np.sum(np.sum(((uni_M_test_rel-uni_data_test_rel).reshape(-1,3,uni_M_test_rel.shape[1]))**2,axis=1)**0.5)/K_test_rel.shape[0]/6 
@@ -326,7 +334,7 @@ for ncluster in range(800,900,100):
 
     # unified joints err
 
-    jerr            = np.sum(np.sum(((uni_M-uni_data).reshape(-1,3,uni_M.shape[1]))**2,axis=1)**0.5,axis = 1) /50247
+    jerr            = np.sum(np.sum(((uni_M-uni_data).reshape(-1,3,uni_M.shape[1]))**2,axis=1)**0.5,axis = 1) /rK.shape[0]
     jerr_unrel      = np.sum(np.sum((((uni_M-uni_data)*(Rmtx<Rel_th)).reshape(-1,3,uni_M.shape[1]))**2,axis=1)**0.5,axis = 1)/np.sum(R<Rel_th,axis=1)
 
     jerr_test_rel   = np.sum(np.sum(((uni_M_test_rel-uni_data_test_rel).reshape(-1,3,uni_M_test_rel.shape[1]))**2,axis=1)**0.5,axis = 1)/K_test_rel.shape[0] 
@@ -336,15 +344,14 @@ for ncluster in range(800,900,100):
     jerr_test       = np.sum(np.sum(((uni_M_test-uni_data_test).reshape(-1,3,uni_M_test.shape[1]))**2,axis=1)**0.5,axis = 1)/K_test.shape[0] 
 
     
-#    # raw data err
-#    raw_err            = np.sum(np.sum(((M.T- data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/50247/6
-#    raw_err_unrel      = np.sum(np.sum((((M.T-data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
-#
-#    raw_err_test_rel   = np.sum(np.sum(((M_test_rel.T- data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/K_test_rel.shape[0]/6 
-#    raw_err_test_unrel = np.sum(np.sum( (((M_test_unrel.T- data_test_unrel)*(Rmtx_test_unrel<Rel_th))\
-#                                    .reshape(-1,3,M_test_unrel.shape[0]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
-#
-#    raw_err_test       = np.sum(np.sum(((M_test.T- data_test).reshape(-1,3,M_test.shape[0]))**2,axis=1)**0.5)/K_test.shape[0]/6     
+    # raw data err
+    raw_err            = np.sum(np.sum(((M.T- data).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/rK.shape[0]/6
+    raw_err_unrel      = np.sum(np.sum((((M.T-data)*(Rmtx<Rel_th)).reshape(-1,3,M.shape[0]))**2,axis=1)**0.5)/np.sum(R<Rel_th)
+    raw_err_test_rel   = np.sum(np.sum(((M_test_rel.T- data_test_rel).reshape(-1,3,M_test_rel.shape[0]))**2,axis=1)**0.5)/K_test_rel.shape[0]/6 
+    raw_err_test_unrel = np.sum(np.sum( (((M_test_unrel.T- data_test_unrel)*(Rmtx_test_unrel<Rel_th))\
+                                   .reshape(-1,3,M_test_unrel.shape[0]))**2,axis=1)**0.5)/np.sum(R_test_unrel<Rel_th)
+
+    raw_err_test       = np.sum(np.sum(((M_test.T- data_test).reshape(-1,3,M_test.shape[0]))**2,axis=1)**0.5)/K_test.shape[0]/6     
     
     
 
@@ -360,6 +367,12 @@ for ncluster in range(800,900,100):
     jErr['test_rel'][ncluster]   = jerr_test_rel
     jErr['test_unrel'][ncluster] = jerr_test_unrel    
     jErr['test_err'][ncluster]   = jerr_test
+
+    rawErr['all'][ncluster]        = raw_err
+    rawErr['unrel'][ncluster]      = raw_err_unrel
+    rawErr['test_rel'][ncluster]   = raw_err_test_rel
+    rawErr['test_unrel'][ncluster] = raw_err_test_unrel    
+    rawErr['test_err'][ncluster]   = raw_err_test
     
     print('Err='           ,err)
     print('Err_unrel='     ,err_unrel)
@@ -367,15 +380,25 @@ for ncluster in range(800,900,100):
     print('Err_test_unrel=',err_test_unrel)
     print('Err_test ='     ,err_test)
     
-    print('Err='           ,jerr)
-    print('Err_unrel='     ,jerr_unrel)
-    print('Err_test_rel='  ,jerr_test_rel)
-    print('Err_test_unrel=',jerr_test_unrel)
-    print('Err_test ='     ,jerr_test)    
+    print('jErr='           ,jerr)
+    print('jErr_unrel='     ,jerr_unrel)
+    print('jErr_test_rel='  ,jerr_test_rel)
+    print('jErr_test_unrel=',jerr_test_unrel)
+    print('jErr_test ='     ,jerr_test) 
+
+    print('raw_Err='           ,raw_err)
+    print('raw_Err_unrel='     ,raw_err_unrel)
+    print('raw_Err_test_rel='  ,raw_err_test_rel)
+    print('raw_Err_test_unrel=',raw_err_test_unrel)
+    print('raw_Err_test ='     ,raw_err_test)    
 
     
-    # fname    = src_path+Errfolder+'Err_'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
-    # jfname = src_path+Errfolder+'joint_Err'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
+    fname    = src_path+Errfolder+'Err_'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
+    jfname = src_path+Errfolder+'joint_Err'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
+    rfname = src_path+Errfolder+'raw_Err'+repr(ncluster).zfill(5)+feature+exeno+'.pkl'
 
-    # cPickle.dump(Err,open(fname,'wb'))
-    # cPickle.dump(jErr,open(jfname,'wb'))
+    cPickle.dump(Err,open(fname,'wb'))
+    cPickle.dump(jErr,open(jfname,'wb'))
+    cPickle.dump(rawErr,open(rfname,'wb'))
+
+print exeno
